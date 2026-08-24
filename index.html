@@ -238,13 +238,12 @@
       return {group:zg,head:hg,body:bg,arms:ag};
     }
     function rebuildZombieHitboxes(){zombieInteractiveMeshes.length=0;activeZombies.forEach((zb,idx)=>{if(!zb.deadAndShrinking&&zb.stage>0){zb.meshParts.group.traverse(c=>{if(c.isMesh&&c.visible&&!c.userData.isCrater){c.userData.parentZombieIndex=idx;c.userData.materialType="flesh";zombieInteractiveMeshes.push(c)}})}})}
-    
     function spawnZombieAtBurrow(){
       if(zombiesToSpawnRemaining<=0||isGameOver)return;
       let playerInBasement = (playerRig.position.y < -40);
       let av=allBurrowHoles.filter(h=>{
-        if(!playerInBasement && h.globalY < -40) return false; // Never spawn in catacombs if player is above
-        if(playerInBasement && h.globalY > -40) return false;  // Never spawn in upper house if player is in basement
+        if(!playerInBasement && h.globalY < -40) return false;
+        if(playerInBasement && h.globalY > -40) return false;
         if(!unlockedDoors[0])return h.globalZ>-25;
         if(!unlockedDoors[1])return h.globalZ>-65;
         if(!unlockedDoors[2])return h.globalZ>-215;
@@ -256,7 +255,6 @@
       activeZombies.push({meshParts:zd,speed:0.05+0.11*(currentRound/(currentRound+35))+Math.random()*0.02,stage:3,emergenceStage:0,stageProgress:0,baseY:th.globalY,deadAndShrinking:false,lastAttackTime:0});
       zombiesToSpawnRemaining--;rebuildZombieHitboxes();
     }
-    
     function throwGrenade(){
       if(isGameOver)return;if(grenadeCount<=0){txtDiv.innerHTML="OUT OF GRENADES! RESTOCK AT WALL STAND.";return}
       grenadeCount--;updateEquipmentUI();const dir=new V3(0,0,-1).applyQuaternion(camera.getWorldQuaternion(new T.Quaternion())).normalize(),sp=playerRig.position.clone().add(new V3(0,2.5,0)),m=MESH(SG(0.2,12,12),SM({color:0x444433,roughness:0.7}),sp.x,sp.y,sp.z);scene.add(m);const v=dir.multiplyScalar(0.7);v.y+=0.25;activeGrenades.push({mesh:m,velocity:v,fuse:2});txtDiv.innerHTML="GRENADE DISPATCHED!";
@@ -299,15 +297,17 @@
           let np=zp.clone().addScaledVector(d,zb.speed);parts.group.position.copy(getConstrainedPosition(np));parts.group.lookAt(tgt.x,parts.group.position.y,tgt.z);
         }
         
-        // 3D Distance + Floor Check
-        let dist3D = parts.group.position.distanceTo(playerRig.position);
-        let sameVerticalFloor = Math.abs(parts.group.position.y - playerRig.position.y) < 2.5;
-        if(dist3D < 2.5 && sameVerticalFloor && zb.emergenceStage === 3 && now - zb.lastAttackTime > 1500){
+        // Accurate planar distance + floor height check
+        let flatZombiePos = new V3(parts.group.position.x, playerRig.position.y, parts.group.position.z);
+        let distPlanar = flatZombiePos.distanceTo(playerRig.position);
+        let sameFloor = Math.abs(parts.group.position.y - playerRig.position.y) < 5.0;
+
+        if(distPlanar < 2.5 && sameFloor && zb.emergenceStage === 3 && now - zb.lastAttackTime > 1500){
           playZombieBiteSound();
           damagePlayer();
           zb.lastAttackTime = now;
         }
-        
+
         if(robotMercState.active&&zb.emergenceStage===3&&!zb.deadAndShrinking){
           let gr=120+robotMercState.level*25,dr=parts.group.position.distanceTo(machineGroup.position);
           if(dr<gr){
