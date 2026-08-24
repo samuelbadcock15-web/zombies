@@ -49,17 +49,17 @@
 
 <div id="gui">
     <div id="stats">WASD + LOOK | KEYS 1-5 SWITCH | G THROW GRENADE | C PLACE CLAYMORE<br>HOLD LMB ON FALLEN TEAMMATES TO REVIVE!</div>
-    <div id="score-board">CREDITS: <span id="score-val">1000</span></div>
+    <div id="score-board">CREDITS: <span id="score-val">500</span></div>
     <div id="round-display">ROUND <span id="round-val">I</span></div>
     <div id="crosshair"></div>
-    <div id="msg-box"><div id="text">HAUNTED PROTOCOL ENGAGED. 1000 CREDITS LOADED.</div></div>
+    <div id="msg-box"><div id="text">HAUNTED PROTOCOL ENGAGED. 500 CREDITS LOADED.</div></div>
 </div>
-
 <canvas id="virtualArcadeCanvas" style="display:none" width="512" height="512"></canvas>
 <canvas id="gunTacticalCanvas" style="display:none" width="512" height="512"></canvas>
 <canvas id="mysteryBoxScreenCanvas" style="display:none" width="512" height="512"></canvas>
 <canvas id="upgradeMachineScreenCanvas" style="display:none" width="512" height="512"></canvas>
 
+<!-- Perk Canvases -->
 <canvas id="jugCanvas" style="display:none" width="512" height="512"></canvas>
 <canvas id="quickReviveCanvas" style="display:none" width="512" height="512"></canvas>
 <canvas id="doubleTapCanvas" style="display:none" width="512" height="512"></canvas>
@@ -71,6 +71,7 @@ let isMultiplayer = false;
 let mySlot = 1;
 let isReady = false;
 let remotePlayers = {};
+let isDowned = false;
 
 const $ = id => document.getElementById(id), sCanvas = $('virtualArcadeCanvas'), sCtx = sCanvas.getContext('2d'), txtDiv = $('text'), promptDiv = $('click-prompt');
 
@@ -95,12 +96,11 @@ const dtTex = new THREE.CanvasTexture($('doubleTapCanvas'));
 const suCtx = $('staminUpCanvas').getContext('2d');
 const suTex = new THREE.CanvasTexture($('staminUpCanvas'));
 
-let playerPoints = 1000;
+let playerPoints = 500;
 let currentWeapon = 1; 
 let playerBites = 0;
 let maxBites = 3; 
 let isGameOver = false;
-let isDowned = false;
 
 let hasJuggerNog = false;
 let hasQuickRevive = false;
@@ -203,7 +203,6 @@ socket.on('start_game', (playersState) => {
     document.body.requestPointerLock();
     initAudio();
 
-    // Corner spawns for 1-4 players in starting room
     const CORNER_SPAWNS = [
         { x: -18, z: 18 },
         { x: 18, z: 18 },
@@ -521,7 +520,6 @@ function playPistolShotSound() {
     osc.start(); osc.stop(audioCtx.currentTime + 0.08);
 }
 
-// Procedural Wall & Floor Textures restored from your solo game
 function createHauntedWoodFloorTexture() {
     const canvas = document.createElement('canvas'); canvas.width = 512; canvas.height = 512;
     const ctx = canvas.getContext('2d'); ctx.fillStyle = '#4a3324'; ctx.fillRect(0, 0, 512, 512);
@@ -554,7 +552,6 @@ function addStructuralMesh(geo, mat, px, py, pz, rx=0, ry=0) {
     return mesh;
 }
 
-// Mansion Structure
 addStructuralMesh(new THREE.PlaneGeometry(50, 50), floorMat, 0,0,0, -Math.PI/2, 0);
 addStructuralMesh(new THREE.PlaneGeometry(50, 50), ceilingMat, 0,16,0, Math.PI/2, 0);
 addStructuralMesh(new THREE.PlaneGeometry(12, 40), floorMat, 0, 0, -45, -Math.PI/2, 0);
@@ -566,7 +563,6 @@ addStructuralMesh(new THREE.PlaneGeometry(50, 16), wallMat, -25, 8, 0, 0, Math.P
 addStructuralMesh(new THREE.PlaneGeometry(50, 16), wallMat, 25, 8, 0, 0, -Math.PI/2);
 addStructuralMesh(new THREE.PlaneGeometry(50, 16), wallMat, 0, 8, 25);
 
-// Zombies & Combat
 const activeZombies = [];
 function createZombieMesh() {
     const zombieGroup = new THREE.Group();
@@ -590,7 +586,6 @@ function executeWeaponFireRaycast() {
     if (isGameOver || isDowned) return;
     raycaster.setFromCamera(new THREE.Vector2(0,0), camera);
 
-    // Revive teammate check
     let remoteEntries = Object.entries(remotePlayers);
     for (let [id, rPlayer] of remoteEntries) {
         let hits = raycaster.intersectObject(rPlayer.group, true);
