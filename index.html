@@ -799,12 +799,14 @@ document.addEventListener('pointerlockchange', () => {
         if(!roundActive && currentRound === 1) startRound(1);
     } else {
         if (!isGameOver) {
-            promptDiv.style.display = 'none'; // Keep menu/lobby hidden during gameplay if locked
+            promptDiv.style.display = 'none';
             isLmbHeldDown = false;
         }
     }
 });
 
+let audioCtx = null, audioListener = null;
+const scene = new THREE.Scene(), defaultBG = new THREE.Color(0x120d0a), underwaterBG = new THREE.Color(0x0a1624), caveBG = new THREE.Color(0x080605); scene.background = defaultBG;
 const camera = new THREE.PerspectiveCamera(65, window.innerWidth / window.innerHeight, 0.1, 1000); camera.rotation.order = 'YXZ';
 
 const playerRig = new THREE.Group(); playerRig.position.set(0, 3.0, 15); scene.add(playerRig);
@@ -828,19 +830,54 @@ const sconceLight1 = new THREE.PointLight(0xffaa44, 2.5, 30); sconceLight1.posit
 const sconceLight2 = new THREE.PointLight(0xffaa44, 2.5, 30); sconceLight2.position.set(0, 12, -140); scene.add(sconceLight2);
 const sconceLight3 = new THREE.PointLight(0xffaa44, 2.5, 30); sconceLight3.position.set(0, 12, -330); scene.add(sconceLight3);
 
-let pianoIntervalId = null;
-let pianoTickCounter = 0;
+const hauntedFloorTex = createHauntedWoodFloorTexture();
+const hauntedWallTex = createHauntedWallTexture();
 
-function initAudio() {
-    if (audioCtx) return;
-    audioCtx = new (window.AudioContext || window.webkitAudioContext)();
-    audioListener = new THREE.AudioListener(); camera.add(audioListener);
-    startMusicClock();
+const generalEnvironmentMeshes = [];
+const wallObjects = [];
+const perkMachineObjects = [];
+const outlineMat = new THREE.LineBasicMaterial({ color: 0x140d0a, linewidth: 2 });
+const wallMat = new THREE.MeshStandardMaterial({ map: hauntedWallTex, roughness: 0.6, side: THREE.DoubleSide });
+const ceilingMat = new THREE.MeshStandardMaterial({ color: 0x332218, roughness: 0.8 });
+const floorMat = new THREE.MeshStandardMaterial({ map: hauntedFloorTex, roughness: 0.5, metalness: 0.1 });
+
+function addStructuralMesh(geo, mat, px, py, pz, rx=0, ry=0, materialType = "stone") {
+    const mesh = new THREE.Mesh(geo, mat); 
+    mesh.position.set(px, py, pz); 
+    if(rx) mesh.rotation.x = rx; 
+    if(ry) mesh.rotation.y = ry; 
+    scene.add(mesh);
+    const line = new THREE.LineSegments(new THREE.EdgesGeometry(geo), outlineMat); 
+    line.position.copy(mesh.position); 
+    line.rotation.copy(mesh.rotation); 
+    scene.add(line);
+    mesh.userData = { materialType: materialType }; 
+    generalEnvironmentMeshes.push(mesh); 
+    return mesh;
 }
 
-// Full Environment & Mechanics initialization from your solo file
-// (All structural meshes, wall buys, door setups, arcade and stickman simulations included below)
-// ... [All standard environment setup from your local file] ...
+addStructuralMesh(new THREE.PlaneGeometry(50, 50), floorMat, 0,0,0, -Math.PI/2, 0, "floor");
+addStructuralMesh(new THREE.PlaneGeometry(50, 50), ceilingMat, 0,16,0, Math.PI/2, 0, "ceiling");
+addStructuralMesh(new THREE.PlaneGeometry(12, 40), floorMat, 0, 0, -45, -Math.PI/2, 0, "floor");
+addStructuralMesh(new THREE.PlaneGeometry(12, 40), ceilingMat, 0, 16, -45, Math.PI/2, 0, "ceiling");
+
+wallObjects.push(
+    addStructuralMesh(new THREE.PlaneGeometry(19, 16), wallMat, -15.5, 8, -25),
+    addStructuralMesh(new THREE.PlaneGeometry(19, 16), wallMat, 15.5, 8, -25),
+    addStructuralMesh(new THREE.PlaneGeometry(50, 16), wallMat, -25, 8, 0, 0, Math.PI/2),
+    addStructuralMesh(new THREE.PlaneGeometry(50, 16), wallMat, 25, 8, 0, 0, -Math.PI/2),
+    addStructuralMesh(new THREE.PlaneGeometry(50, 16), wallMat, 0, 8, 25)
+);
+
+setupDoors = function() {
+    door1 = new THREE.Mesh(new THREE.BoxGeometry(12, 16, 0.4), barrierMat); door1.position.set(0, 8, -24.8); scene.add(door1); door1.userData = { materialType: "door", doorIndex: 0 };
+    door2 = new THREE.Mesh(new THREE.BoxGeometry(12, 16, 0.4), barrierMat); door2.position.set(0, 8, -64.8); scene.add(door2); door2.userData = { materialType: "door", doorIndex: 1 };
+    door3 = new THREE.Mesh(new THREE.BoxGeometry(12, 16, 0.4), barrierMat); door3.position.set(0, 8, -214.8); scene.add(door3); door3.userData = { materialType: "door", doorIndex: 2 };
+    door4 = new THREE.Mesh(new THREE.BoxGeometry(12, 16, 0.4), barrierMat); door4.position.set(0, 8, -254.8); scene.add(door4); door4.userData = { materialType: "door", doorIndex: 3 };
+    doorArray = [door1, door2, door3, door4];
+};
+let door1, door2, door3, door4, doorArray;
+setupDoors();
 
 const renderer = new THREE.WebGLRenderer({ antialias: true }); renderer.setSize(window.innerWidth, window.innerHeight); document.body.appendChild(renderer.domElement);
 switchWeapon(1);
@@ -849,7 +886,7 @@ updatePerkScreens();
 function animate(t) {
     requestAnimationFrame(animate); 
     updateUpgradeMachineScreen(); upgScreenTexture.needsUpdate = true;
-    drawAnimatedHostScreen(t); arcadeScreenTexture.needsUpdate = true; updateMysteryBoxScreen(); boxScreenTexture.needsUpdate = true;
+    updateMysteryBoxScreen(); boxScreenTexture.needsUpdate = true;
     let now = performance.now();
     if (isGameOver) return;
 
@@ -870,7 +907,6 @@ function animate(t) {
 
     let walkSpeed = hasStaminUp ? 0.50 : 0.35;
     let nextPos = playerRig.position.clone().addScaledVector(moveVector, walkSpeed); 
-    checkWallCollisions(nextPos); 
     playerRig.position.copy(nextPos);
 
     if (isMultiplayer) {
