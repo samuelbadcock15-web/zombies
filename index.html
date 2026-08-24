@@ -145,7 +145,7 @@
     function playProceduralDigSound(){if(!audioCtx)return;const o=audioCtx.createOscillator(),g=audioCtx.createGain();o.type='sawtooth';o.frequency.setValueAtTime(70,audioCtx.currentTime);o.frequency.linearRampToValueAtTime(20,audioCtx.currentTime+0.12);g.gain.setValueAtTime(0.2,audioCtx.currentTime);g.gain.linearRampToValueAtTime(0.01,audioCtx.currentTime+0.12);o.connect(g);g.connect(audioCtx.destination);o.start();o.stop(audioCtx.currentTime+0.12)}
     function playMysteryBoxSound(){if(!audioCtx)return;const o=audioCtx.createOscillator(),g=audioCtx.createGain();o.type='sine';o.frequency.setValueAtTime(587.33,audioCtx.currentTime);o.frequency.linearRampToValueAtTime(880,audioCtx.currentTime+0.4);g.gain.setValueAtTime(0.15,audioCtx.currentTime);g.gain.linearRampToValueAtTime(0.01,audioCtx.currentTime+0.4);o.connect(g);g.connect(audioCtx.destination);o.start();o.stop(audioCtx.currentTime+0.4)}
     function createHauntedWoodFloorTexture(){const c=document.createElement('canvas');c.width=c.height=512;const ctx=c.getContext('2d');ctx.fillStyle='#4a3324';ctx.fillRect(0,0,512,512);ctx.strokeStyle='#1f140e';ctx.lineWidth=6;for(let i=0;i<=512;i+=64){ctx.beginPath();ctx.moveTo(i,0);ctx.lineTo(i,512);ctx.stroke()}for(let i=0;i<90;i++){ctx.fillStyle=Math.random()>0.5?'rgba(30,20,14,0.35)':'rgba(90,65,45,0.25)';ctx.fillRect(Math.random()*512,Math.random()*512,Math.random()*120+20,Math.random()*12+3)}const tex=new T.CanvasTexture(c);tex.wrapS=tex.wrapT=T.RepeatWrapping;tex.repeat.set(4,4);return tex}
-    function createHauntedWallTexture(){const c=document.createElement('canvas');c.width=512;c.height=512;const ctx=c.getContext('2d');ctx.fillStyle='#5c4033';ctx.fillRect(0,0,512,512);ctx.strokeStyle='#2b1b12';ctx.lineWidth=10;ctx.strokeRect(20,20,472,472);ctx.strokeStyle='#7a523c';ctx.lineWidth=4;ctx.strokeRect(26,26,460,460);ctx.strokeStyle='#2b1b12';ctx.lineWidth=8;ctx.strokeRect(60,60,392,392);ctx.strokeStyle='#7a523c';ctx.lineWidth=3;ctx.strokeRect(65,65,382,382);for(let i=0;i<60;i++){ctx.fillStyle=Math.random()>0.5?'rgba(35,22,14,0.3)':'rgba(110,80,55,0.2)';ctx.fillRect(Math.random()*512,Math.random()*512,Math.random()*100+15,Math.random()*16+4)}const tex=new T.CanvasTexture(c);tex.wrapS=tex.wrapT=T.RepeatWrapping;tex.repeat.set(3,2);return tex}
+    function createHauntedWallTexture(){const c=document.createElement('canvas');c.width=c.height=512;const ctx=c.getContext('2d');ctx.fillStyle='#5c4033';ctx.fillRect(0,0,512,512);ctx.strokeStyle='#2b1b12';ctx.lineWidth=10;ctx.strokeRect(20,20,472,472);ctx.strokeStyle='#7a523c';ctx.lineWidth=4;ctx.strokeRect(26,26,460,460);ctx.strokeStyle='#2b1b12';ctx.lineWidth=8;ctx.strokeRect(60,60,392,392);ctx.strokeStyle='#7a523c';ctx.lineWidth=3;ctx.strokeRect(65,65,382,382);for(let i=0;i<60;i++){ctx.fillStyle=Math.random()>0.5?'rgba(35,22,14,0.3)':'rgba(110,80,55,0.2)';ctx.fillRect(Math.random()*512,Math.random()*512,Math.random()*100+15,Math.random()*16+4)}const tex=new T.CanvasTexture(c);tex.wrapS=tex.wrapT=T.RepeatWrapping;tex.repeat.set(3,2);return tex}
     const generalEnvironmentMeshes=[],wallObjects=[],perkMachineObjects=[],outlineMat=new T.LineBasicMaterial({color:0x140d0a,linewidth:2}),wallMat=SM({map:createHauntedWallTexture(),roughness:0.6,side:T.DoubleSide}),ceilingMat=SM({color:0x332218,roughness:0.8}),floorMat=SM({map:createHauntedWoodFloorTexture(),roughness:0.5,metalness:0.1});
     function addStructuralMesh(geo,mat,px,py,pz,rx=0,ry=0,mt="stone"){const m=MESH(geo,mat,px,py,pz,rx,ry);scene.add(m);const l=new T.LineSegments(new T.EdgesGeometry(geo),outlineMat);l.position.copy(m.position);l.rotation.copy(m.rotation);scene.add(l);m.userData={materialType:mt};generalEnvironmentMeshes.push(m);return m}
     addStructuralMesh(PG(50,50),floorMat,0,0,0,-Math.PI/2,0,"floor");addStructuralMesh(PG(50,50),ceilingMat,0,16,0,Math.PI/2,0,"ceiling");addStructuralMesh(PG(12,40),floorMat,0,0,-45,-Math.PI/2,0,"floor");addStructuralMesh(PG(12,40),ceilingMat,0,16,-45,Math.PI/2,0,"ceiling");
@@ -287,8 +287,16 @@
           let d=new V3().subVectors(tgt,zp);d.y=0;d.normalize();
           let np=zp.clone().addScaledVector(d,zb.speed);parts.group.position.copy(getConstrainedPosition(np));parts.group.lookAt(tgt.x,parts.group.position.y,tgt.z);
         }
-        let fz=new V3(parts.group.position.x,playerRig.position.y,parts.group.position.z);
-        if(fz.distanceTo(playerRig.position)<2.5&&zb.emergenceStage===3&&now-zb.lastAttackTime>1500){playZombieBiteSound();damagePlayer();zb.lastAttackTime=now}
+        
+        // Accurate 3D Distance Check (Fixed vertical ghost bite bug)
+        let dist3D = parts.group.position.distanceTo(playerRig.position);
+        let sameVerticalFloor = Math.abs(parts.group.position.y - playerRig.position.y) < 2.5;
+        if(dist3D < 2.5 && sameVerticalFloor && zb.emergenceStage === 3 && now - zb.lastAttackTime > 1500){
+          playZombieBiteSound();
+          damagePlayer();
+          zb.lastAttackTime = now;
+        }
+        
         if(robotMercState.active&&zb.emergenceStage===3&&!zb.deadAndShrinking){
           let gr=120+robotMercState.level*25,dr=parts.group.position.distanceTo(machineGroup.position);
           if(dr<gr){
