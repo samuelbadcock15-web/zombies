@@ -1,5 +1,5 @@
 {
-  "name": "haunted-mansion-zombies",
+  "name": "zombies",
   "version": "1.0.0",
   "main": "server.js",
   "scripts": {
