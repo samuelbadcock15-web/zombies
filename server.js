@@ -1,7 +1,6 @@
 const express = require('express');
 const http = require('http');
 const { Server } = require('socket.io');
-const path = require('path');
 
 const app = express();
 const server = http.createServer(app);
@@ -9,23 +8,22 @@ const io = new Server(server);
 
 app.use(express.static(__dirname));
 
-app.get('/', (req, res) => {
-    res.sendFile(path.join(__dirname, 'index.html'));
-});
-
 let lobbyState = {
-    players: {},
+    players: {}, // socket.id -> { id, slot, ready: false }
     gameStarted: false
 };
 
 const CORNER_SPAWNS = [
-    { x: -18, z: 18 },
-    { x: 18, z: 18 },
-    { x: -18, z: -18 },
-    { x: 18, z: -18 }
+    { x: -20, z: 20 },
+    { x: 20, z: 20 },
+    { x: -20, z: -20 },
+    { x: 20, z: -20 }
 ];
 
 io.on('connection', (socket) => {
+    console.log(`Player connected: ${socket.id}`);
+
+    // Assign slot 1-4 if available
     let assignedSlot = null;
     let usedSlots = Object.values(lobbyState.players).map(p => p.slot);
     for (let i = 1; i <= 4; i++) {
@@ -60,6 +58,8 @@ io.on('connection', (socket) => {
     socket.on('set_ready', (isReady) => {
         if (lobbyState.players[socket.id]) {
             lobbyState.players[socket.id].ready = isReady;
+            
+            // Check if all players in lobby are ready and at least 1 player is present
             let allPlayers = Object.values(lobbyState.players);
             let allReady = allPlayers.length > 0 && allPlayers.every(p => p.ready);
 
@@ -93,7 +93,7 @@ io.on('connection', (socket) => {
             lobbyState.players[targetId].reviveProgress += 0.05;
             if (lobbyState.players[targetId].reviveProgress >= 1.0) {
                 lobbyState.players[targetId].isDowned = false;
-                lobbyState.players[targetId].health = 1;
+                lobbyState.players[targetId].health = 1; // Revived with 1 heart
                 lobbyState.players[targetId].reviveProgress = 0;
             }
             io.emit('update_players_state', lobbyState.players);
@@ -101,6 +101,7 @@ io.on('connection', (socket) => {
     });
 
     socket.on('disconnect', () => {
+        console.log(`Player disconnected: ${socket.id}`);
         delete lobbyState.players[socket.id];
         if (Object.keys(lobbyState.players).length === 0) {
             lobbyState.gameStarted = false;
@@ -111,5 +112,5 @@ io.on('connection', (socket) => {
 
 const PORT = process.env.PORT || 3000;
 server.listen(PORT, () => {
-    console.log(`Server running on port ${PORT}`);
+    console.log(`Haunted Mansion Vault Server running on port ${PORT}`);
 });
