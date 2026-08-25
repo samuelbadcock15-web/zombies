@@ -25,7 +25,7 @@
     #click-prompt{position:absolute;inset:0;background:rgba(15,10,8,.9);color:#d4af37;display:flex;align-items:center;justify-content:center;font-size:24px;font-weight:700;cursor:pointer;pointer-events:auto;text-transform:uppercase;z-index:100}
     #damage-overlay{position:absolute;inset:0;background:rgba(255,0,0,0);pointer-events:none;transition:background .1s ease;z-index:5}
 
-    /* Squad Board Overlay */
+    /* Squad Board Overlay (Mobile Only) */
     #squad-board { position: absolute; top: 40px; right: 8px; font-size: 11px; font-weight: 700; background: #140d0a; color: #fa0; padding: 6px 10px; border: 2px solid #8b5a2b; display: none; z-index: 25; line-height: 1.4; }
 
     @media (pointer: coarse) {
@@ -277,12 +277,13 @@
       lookPad.addEventListener('touchcancel', resetLookPad);
     }
 
+    // Tap anywhere to shoot on mobile
     window.addEventListener('touchstart', e => {
       if (isGameOver || !isMobile || e.target.tagName.includes('BUTTON') || e.target.closest('#mobile-controls') || e.target.closest('#click-prompt')) return;
       executeWeaponFireRaycast();
     });
 
-    // --- Click Prompt Handler with Mobile & Pointer Lock Support ---
+    // --- Click Prompt Handler maintaining Desktop pointer lock & Mobile init ---
     promptDiv.onclick = () => {
       initAudio();
       if(audioCtx && audioCtx.state === 'suspended') audioCtx.resume();
@@ -294,9 +295,6 @@
       }
       
       promptDiv.style.display = 'none';
-      if(isMobile) {
-        $('mobile-controls').style.display = 'block';
-      }
       if(!roundActive && currentRound === 1) {
         startRound(1);
       }
