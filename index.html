@@ -110,8 +110,8 @@
     const isMobile = /Mobi|Android|iPhone/i.test(navigator.userAgent) || ('ontouchstart' in window);
 
     if (isMobile) {
-      $('mobile-controls').style.display = 'block';
-      $('squad-board').style.display = 'block';
+      document.getElementById('mobile-controls').style.display = 'block';
+      document.getElementById('squad-board').style.display = 'block';
     }
 
     const $=i=>document.getElementById(i),T=THREE,V3=T.Vector3,BG=(w,h,d)=>new T.BoxGeometry(w,h,d),CG=(rt,rb,h,s=16)=>new T.CylinderGeometry(rt,rb,h,s),PG=(w,h)=>new T.PlaneGeometry(w,h),SG=(r,s=16,p=16)=>new T.SphereGeometry(r,s,p),SM=m=>new T.MeshStandardMaterial(m),BM=m=>new T.MeshBasicMaterial(m),GRP=()=>new T.Group();
@@ -127,6 +127,11 @@
     let ammoReserves={1:200,2:0,3:0,4:0,5:0},weaponUpgradeLevels={1:0,2:0,3:0,4:0,5:0},hasAutomaticPistol=false,hasRifle=false,hasAutoRifle=false,hasRayPistol=false,isLmbHeldDown=false,lastShotTime=0,autoFireRateMs=120,grenadeCount=2,grenadeUpgradeLevel=0,claymoreCount=2,claymoreUpgradeLevel=0;
     const activeGrenades=[],activeClaymores=[];
     let robotMercState={active:false,health:100,maxHealth:100,durationTimer:0,level:1,isBeingOverrun:false,overrunProgress:0,lastProximitySpeechTime:0};
+    
+    const unhiredLines=["Penumbra industries veteran at your service, marine! Five hundred credits and I'll clear this path!","You want heavy metal firepower? Pay the toll, soldier and let's party!","I've survived worse than this haunted estate. Hire me for 500 credits and watch these phantoms scatter!","Looking for a shield? Drop 500 credits and I'll lead the vanguard charge!"];
+    const hiredLines=["Heavy metal activated! Locking and loading for Vanguard Company!","Get to the extraction point! I've got your flank covered, marine!","Come on! Let's party! No ghoul gets past these dual barrels!","Vanguard ship is waiting in the clouds! Stay frosty and keep pumping lead!"];
+    let lastUnhiredLineIdx=-1,lastHiredLineIdx=-1;
+    function getUniqueRandomLine(h){let p=h?hiredLines:unhiredLines,l=h?lastHiredLineIdx:lastUnhiredLineIdx,i;do{i=Math.floor(Math.random()*p.length)}while(i===l&&p.length>1);if(h)lastHiredLineIdx=i;else lastUnhiredLineIdx=i;return p[i]}
     
     function updatePerkScreens(){
       [{c:jugCtx,t:jugTex,b:'#220000',s:'#ff2222',n:'JUGGER-NOG',m:hasJuggerNog?"ACQUIRED (+1 HEART)":"COST: 2500 CREDITS"},{c:qrCtx,t:qrTex,b:'#001122',s:'#00a8ff',n:'QUICK REVIVE',m:hasQuickRevive?`SHIELD: ${quickReviveShield}/2`:"COST: 1500 CREDITS"},{c:dtCtx,t:dtTex,b:'#221100',s:'#ffaa00',n:'DOUBLE TAP II',m:hasDoubleTap?"ACQUIRED (2X FIRE/DMG)":"COST: 2000 CREDITS"},{c:suCtx,t:suTex,b:'#002200',s:'#ffff00',n:'STAMIN-UP',m:hasStaminUp?"ACQUIRED (SPEED BOOST)":"COST: 2000 CREDITS"}].forEach(k=>{k.c.fillStyle=k.b;k.c.fillRect(0,0,512,512);k.c.strokeStyle=k.s;k.c.lineWidth=14;k.c.strokeRect(10,10,492,492);k.c.fillStyle=k.s;k.c.font='bold 36px monospace';k.c.textAlign='center';k.c.fillText(k.n,256,80);k.c.fillStyle='#fff';k.c.font='bold 24px monospace';k.c.fillText(k.m,256,200);k.t.needsUpdate=true});
@@ -311,7 +316,14 @@
     const gunMeshGroup=GRP();pistolGroup.add(gunMeshGroup);
     const muzzleFlash=new T.PointLight(0xffaa00,0,10);pistolGroup.add(muzzleFlash);
     let playerYaw=0,playerPitch=0;const raycaster=new T.Raycaster();
+    
     scene.add(new T.AmbientLight(0xffeedd,1.4));const sunLight=new T.DirectionalLight(0xfff5ee,1);sunLight.position.set(30,60,30);scene.add(sunLight);
+    [[0,8,0],[0,12,-140],[0,12,-330]].forEach(p=>{let pl=new T.PointLight(0xffaa44,2.5,30);pl.position.set(...p);scene.add(pl)});
+
+    // Full structural environments & walls
+    const generalEnvironmentMeshes=[],wallObjects=[],perkMachineObjects=[],outlineMat=new T.LineBasicMaterial({color:0x140d0a,linewidth:2}),wallMat=SM({roughness:0.6,side:T.DoubleSide}),ceilingMat=SM({color:0x332218,roughness:0.8}),floorMat=SM({roughness:0.5,metalness:0.1});
+    function addStructuralMesh(geo,mat,px,py,pz,rx=0,ry=0,mt="stone"){const m=MESH(geo,mat,px,py,pz,rx,ry);scene.add(m);const l=new T.LineSegments(new T.EdgesGeometry(geo),outlineMat);l.position.copy(m.position);l.rotation.copy(m.rotation);scene.add(l);m.userData={materialType:mt};generalEnvironmentMeshes.push(m);return m}
+    addStructuralMesh(PG(50,50),floorMat,0,0,0,-Math.PI/2,0,"floor");addStructuralMesh(PG(50,50),ceilingMat,0,16,0,Math.PI/2,0,"ceiling");
 
     function executeWeaponFireRaycast() {
       if(isGameOver)return;
