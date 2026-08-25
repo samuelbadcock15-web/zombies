@@ -188,6 +188,88 @@
       txtDiv.innerHTML=`WEAPON SWITCHED TO: ${baseWeaponData[currentWeapon].name}${upg?` [LEVEL ${toRoman(weaponUpgradeLevels[currentWeapon])}]`:""}`;
     }
 
+    // --- Touch Control Setup for Mobile ---
+    const keys={w:0,a:0,s:0,d:0,shift:0};
+
+    function setupTouchButton(id, keyName, isAction = false, actionFunc = null) {
+      const el = $(id);
+      if(!el) return;
+      el.addEventListener('touchstart', e => {
+        e.preventDefault();
+        if (isAction && actionFunc) {
+          actionFunc();
+        } else {
+          keys[keyName] = 1;
+        }
+      });
+      el.addEventListener('touchend', e => {
+        e.preventDefault();
+        if (!isAction) {
+          keys[keyName] = 0;
+        }
+      });
+    }
+
+    setupTouchButton('dpad-up', 'w');
+    setupTouchButton('dpad-down', 's');
+    setupTouchButton('dpad-left-dir', 'a');
+    setupTouchButton('dpad-right-dir', 'd');
+    setupTouchButton('btn-nade', null, true, throwGrenade);
+    setupTouchButton('btn-clay', null, true, placeClaymore);
+
+    window.addEventListener('keydown',e=>{if(isGameOver)return;if(e.code==='KeyW')keys.w=1;if(e.code==='KeyS')keys.s=1;if(e.code==='KeyA')keys.a=1;if(e.code==='KeyD')keys.d=1;if(e.code==='ShiftLeft'||e.code==='ShiftRight')keys.shift=1;if(e.code==='Digit1')switchWeapon(1);if(e.code==='Digit2')switchWeapon(2);if(e.code==='Digit3')switchWeapon(3);if(e.code==='Digit4')switchWeapon(4);if(e.code==='Digit5')switchWeapon(5);if(e.code==='KeyG')throwGrenade();if(e.code==='KeyC')placeClaymore()});
+    window.addEventListener('keyup',e=>{if(e.code==='KeyW')keys.w=0;if(e.code==='KeyS')keys.s=0;if(e.code==='KeyA')keys.a=0;if(e.code==='KeyD')keys.d=0;if(e.code==='ShiftLeft'||e.code==='ShiftRight')keys.shift=0});
+
+    let lookTouchId = null;
+    let lastTouchX = null, lastTouchY = null;
+    const lookPad = $('look-pad');
+
+    if(lookPad) {
+      lookPad.addEventListener('touchstart', e => {
+        e.preventDefault();
+        if (lookTouchId !== null) return;
+        const t = e.changedTouches[0];
+        lookTouchId = t.identifier;
+        lastTouchX = t.clientX;
+        lastTouchY = t.clientY;
+      });
+
+      lookPad.addEventListener('touchmove', e => {
+        e.preventDefault();
+        if (lastTouchX === null || isGameOver) return;
+        for (let i = 0; i < e.changedTouches.length; i++) {
+          const t = e.changedTouches[i];
+          if (t.identifier === lookTouchId) {
+            const dx = t.clientX - lastTouchX;
+            const dy = t.clientY - lastTouchY;
+            lastTouchX = t.clientX;
+            lastTouchY = t.clientY;
+
+            playerYaw -= dx * 0.006;
+            playerRig.rotation.y = playerYaw;
+            playerPitch = Math.max(-1.4, Math.min(1.4, playerPitch - dy * 0.006));
+            cameraPitchObject.rotation.x = playerPitch;
+          }
+        }
+      });
+
+      function resetLookPad(e) {
+        for (let i = 0; i < e.changedTouches.length; i++) {
+          if (e.changedTouches[i].identifier === lookTouchId) {
+            lookTouchId = null;
+            lastTouchX = lastTouchY = null;
+          }
+        }
+      }
+      lookPad.addEventListener('touchend', resetLookPad);
+      lookPad.addEventListener('touchcancel', resetLookPad);
+    }
+
+    window.addEventListener('touchstart', e => {
+      if (isGameOver || !isMobile || e.target.tagName.includes('BUTTON') || e.target.closest('#mobile-controls') || e.target.closest('#click-prompt')) return;
+      executeWeaponFireRaycast();
+    });
+
     // --- Click Prompt Handler with Mobile & Pointer Lock Support ---
     promptDiv.onclick = () => {
       initAudio();
