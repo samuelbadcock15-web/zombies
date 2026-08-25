@@ -275,7 +275,8 @@
     });
 
     // --- Click Prompt Handler with Mobile & Pointer Lock Support ---
-    promptDiv.onclick = () => {
+    promptDiv.onclick = (e) => {
+      e.preventDefault();
       initAudio();
       if(audioCtx && audioCtx.state === 'suspended') audioCtx.resume();
       
@@ -293,6 +294,11 @@
         startRound(1);
       }
     };
+
+    promptDiv.addEventListener('touchstart', (e) => {
+      e.preventDefault();
+      promptDiv.click();
+    }, { passive: false });
 
     if(!isMobile) {
       document.addEventListener('pointerlockchange',()=>{
