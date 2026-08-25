@@ -14,7 +14,6 @@
     #stats { position: absolute; top: 6px; left: 8px; font-size: 10px; font-weight: 700; background: rgba(30,20,15,.9); color: #d4af37; padding: 3px 6px; border: 1px solid #6b4c35; max-width: 50vw; line-height: 1.2; }
     #score-board { position: absolute; top: 6px; right: 8px; font-size: 13px; font-weight: 700; background: #140d0a; color: #fa0; padding: 4px 10px; border: 2px solid #8b5a2b; pointer-events: auto; }
     
-    /* Round display safely tucked away at bottom-left, clear of movement pad */
     #round-display { position: absolute; bottom: 8px; left: 135px; font-size: 26px; font-weight: 700; color: #c22; text-shadow: 2px 2px #000; pointer-events: none; }
     #msg-box { position: absolute; top: 85px; width: 100%; text-align: center; left: 0; pointer-events: none; }
     #text { display: inline-block; background: rgba(35,24,18,.95); color: #f0e0d0; border: 2px solid #8b5a2b; padding: 4px 10px; font-size: 10px; font-weight: 700; text-transform: uppercase; box-shadow: 0 4px 10px rgba(0,0,0,.5); max-width: 90vw; }
@@ -34,7 +33,6 @@
     #mobile-controls { position: absolute; inset: 0; pointer-events: none; z-index: 20; display: none; }
     .touch-interactive { pointer-events: auto; }
     
-    /* Compact D-Pad positioned safely above bottom edge */
     #dpad { position: absolute; bottom: 42px; left: 10px; width: 115px; height: 115px; }
     .dpad-btn { position: absolute; width: 36px; height: 36px; background: rgba(43,24,16,0.85); border: 2px solid #d4af37; border-radius: 6px; color: #d4af37; font-size: 15px; font-weight: 900; display: flex; align-items: center; justify-content: center; box-shadow: 0 3px 8px rgba(0,0,0,0.5); }
     #dpad-up { top: 0; left: 39.5px; }
@@ -46,7 +44,6 @@
     #btn-nade { left: 39.5px; border-top-left-radius: 4px; border-bottom-left-radius: 4px; }
     #btn-clay { left: 58.5px; border-top-right-radius: 4px; border-bottom-right-radius: 4px; }
 
-    /* Wide and short Look-Pad */
     #look-pad { position: absolute; bottom: 12px; right: 10px; left: 130px; height: 22vh; background: rgba(212,175,55,0.06); border: 2px dashed rgba(212,175,55,0.3); border-radius: 10px; touch-action: none; }
 
     #weapon-bar { position: absolute; top: 40px; left: 8px; display: flex; gap: 3px; pointer-events: auto; }
@@ -166,7 +163,7 @@
     }
     function triggerGameOver(){isGameOver=true;document.exitPointerLock();promptDiv.style.display='flex';$('prompt-text').innerHTML=`GAME OVER<br>YOU SURVIVED UNTIL ROUND ${currentRound}<br><br>Refresh page to restart`}
     function startRound(r){currentRound=r;$('round-val').innerText=toRoman(currentRound);zombiesToSpawnRemaining=4+Math.floor(currentRound*2.5);spawnInterval=Math.max(600,2500-currentRound*120);roundActive=true;txtDiv.innerHTML=`ROUND ${toRoman(currentRound)} HAS COMMENCED!`}
-    function checkRoundEnd(){if(!roundActive)return;if(zombiesToSpawnRemaining===0&&activeZombies.filter(z=>!z.deadAndShrinking).length===0){roundActive=false;txtDiv.innerHTML=`ROUND ${currentRound} CLEARED. THE MANSION QUIETS...`;setTimeout(()=>{if(!isGameOver)startRound(currentRound+1)},4000)}}
+    function checkRoundEnd(){if(!roundActive)return;if(zombiesToSpawnRemaining===0&&activeZombies.filter(z=>!z.deadAndShrinking).length===0){roundActive=false;txtDiv.innerHTML=`ROUND ${toRoman(currentRound)} CLEARED. THE MANSION QUIETS...`;setTimeout(()=>{if(!isGameOver)startRound(currentRound+1)},4000)}}
     function attachTacticalDisplay(g,s=1){let h=MESH(BG(0.09*s,0.11*s,0.015*s),SM({color:0x2b1d14,metalness:0.5,roughness:0.4}),-0.048,0.07,-0.02,0,-Math.PI/2),f=MESH(PG(0.082*s,0.102*s),BM({map:gunTacticalTexture,toneMapped:false}),0,0,0.009*s);h.add(f);g.add(h)}
     function buildWeaponGeometry(id,upg){
       const g=GRP();let mc=id===2?0x4a3b32:(id===3?0x5c4a3d:(id===4?0x333333:(id===5?0x00ffcc:0x3a2e25)));
@@ -190,7 +187,38 @@
       gunMeshGroup.add(buildWeaponGeometry(currentWeapon,upg));attachTacticalDisplay(gunMeshGroup,1.3);updateTacticalHUD();
       txtDiv.innerHTML=`WEAPON SWITCHED TO: ${baseWeaponData[currentWeapon].name}${upg?` [LEVEL ${toRoman(weaponUpgradeLevels[currentWeapon])}]`:""}`;
     }
-    document.addEventListener('pointerlockchange',()=>{if(document.pointerLockElement===document.body){promptDiv.style.display='none';initAudio();if(!roundActive&&currentRound===1)startRound(1)}else if(!isGameOver){promptDiv.style.display='flex';isLmbHeldDown=false}});
+
+    // --- Click Prompt Handler with Mobile & Pointer Lock Support ---
+    promptDiv.onclick = () => {
+      initAudio();
+      if(audioCtx && audioCtx.state === 'suspended') audioCtx.resume();
+      
+      if (!isMobile) {
+        document.body.requestPointerLock().catch(err => {
+          console.log("Pointer lock failed:", err);
+        });
+      }
+      
+      promptDiv.style.display = 'none';
+      if(isMobile) {
+        $('mobile-controls').style.display = 'block';
+      }
+      if(!roundActive && currentRound === 1) {
+        startRound(1);
+      }
+    };
+
+    document.addEventListener('pointerlockchange',()=>{
+      if(document.pointerLockElement===document.body){
+        promptDiv.style.display='none';
+        initAudio();
+        if(!roundActive&&currentRound===1)startRound(1)
+      } else if(!isGameOver && !isMobile){
+        promptDiv.style.display='flex';
+        isLmbHeldDown=false;
+      }
+    });
+
     let audioCtx=null,audioListener=null;const scene=new T.Scene(),defaultBG=new T.Color(0x120d0a),underwaterBG=new T.Color(0x0a1624),caveBG=new T.Color(0x080605);scene.background=defaultBG;
     const camera=new T.PerspectiveCamera(isMobile ? 75 : 65,window.innerWidth/window.innerHeight,0.1,1000);camera.rotation.order='YXZ';
     const playerRig=GRP();playerRig.position.set(0,3,15);scene.add(playerRig);
@@ -305,6 +333,23 @@
       return {group:zg,head:hg,body:bg,arms:ag};
     }
     function rebuildZombieHitboxes(){zombieInteractiveMeshes.length=0;activeZombies.forEach((zb,idx)=>{if(!zb.deadAndShrinking&&zb.stage>0){zb.meshParts.group.traverse(c=>{if(c.isMesh&&c.visible&&!c.userData.isCrater){c.userData.parentZombieIndex=idx;c.userData.materialType="flesh";zombieInteractiveMeshes.push(c)}})}})}
+    function spawnZombieAtBurrow(){
+      if(zombiesToSpawnRemaining<=0||isGameOver)return;
+      let playerInBasement = (playerRig.position.y < -40);
+      let av=allBurrowHoles.filter(h=>{
+        if(!playerInBasement && h.globalY < -40) return false;
+        if(playerInBasement && h.globalY > -40) return false;
+        if(!unlockedDoors[0])return h.globalZ>-25;
+        if(!unlockedDoors[1])return h.globalZ>-65;
+        if(!unlockedDoors[2])return h.globalZ>-215;
+        if(!unlockedDoors[3])return h.globalZ>-255;
+        return true;
+      });
+      if(!av.length)return;const th=av[Math.floor(Math.random()*av.length)];if(th.dirtCount>0){clearHoleDirtLayer(allBurrowHoles.indexOf(th));return}
+      const zd=createZombieMesh();zd.group.position.set(th.globalX,th.globalY,th.globalZ);scene.add(zd.group);
+      activeZombies.push({meshParts:zd,speed:0.05+0.11*(currentRound/(currentRound+35))+Math.random()*0.02,stage:3,emergenceStage:0,stageProgress:0,baseY:th.globalY,deadAndShrinking:false,lastAttackTime:0});
+      zombiesToSpawnRemaining--;rebuildZombieHitboxes();
+    }
 
     // --- Touch Control Setup for Single Player Game ---
     const keys={w:0,a:0,s:0,d:0,shift:0};
@@ -316,8 +361,8 @@
     }
     setupTouchButton('dpad-up', 'w');
     setupTouchButton('dpad-down', 's');
-    setupTouchButton('dpad-left', 'a');
-    setupTouchButton('dpad-right', 'd');
+    setupTouchButton('dpad-left-dir', 'a');
+    setupTouchButton('dpad-right-dir', 'd');
 
     window.addEventListener('keydown',e=>{if(isGameOver)return;if(e.code==='KeyW')keys.w=1;if(e.code==='KeyS')keys.s=1;if(e.code==='KeyA')keys.a=1;if(e.code==='KeyD')keys.d=1;if(e.code==='ShiftLeft'||e.code==='ShiftRight')keys.shift=1;if(e.code==='Digit1')switchWeapon(1);if(e.code==='Digit2')switchWeapon(2);if(e.code==='Digit3')switchWeapon(3);if(e.code==='Digit4')switchWeapon(4);if(e.code==='Digit5')switchWeapon(5);if(e.code==='KeyG')throwGrenade();if(e.code==='KeyC')placeClaymore()});
     window.addEventListener('keyup',e=>{if(e.code==='KeyW')keys.w=0;if(e.code==='KeyS')keys.s=0;if(e.code==='KeyA')keys.a=0;if(e.code==='KeyD')keys.d=0;if(e.code==='ShiftLeft'||e.code==='ShiftRight')keys.shift=0});
