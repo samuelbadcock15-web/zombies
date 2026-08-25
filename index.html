@@ -97,7 +97,6 @@
     </div>
   </div>
 
-  <!-- Offscreen Canvases -->
   <canvas id="virtualArcadeCanvas" style="display:none" width="512" height="512"></canvas>
   <canvas id="gunTacticalCanvas" style="display:none" width="512" height="512"></canvas>
   <canvas id="mysteryBoxScreenCanvas" style="display:none" width="512" height="512"></canvas>
@@ -110,10 +109,9 @@
   <script>
     const isMobile = /Mobi|Android|iPhone/i.test(navigator.userAgent) || ('ontouchstart' in window);
 
-    // Show mobile UI elements exclusively on mobile devices, keeping desktop clean
     if (isMobile) {
-      document.getElementById('mobile-controls').style.display = 'block';
-      document.getElementById('squad-board').style.display = 'block';
+      $('mobile-controls').style.display = 'block';
+      $('squad-board').style.display = 'block';
     }
 
     const $=i=>document.getElementById(i),T=THREE,V3=T.Vector3,BG=(w,h,d)=>new T.BoxGeometry(w,h,d),CG=(rt,rb,h,s=16)=>new T.CylinderGeometry(rt,rb,h,s),PG=(w,h)=>new T.PlaneGeometry(w,h),SG=(r,s=16,p=16)=>new T.SphereGeometry(r,s,p),SM=m=>new T.MeshStandardMaterial(m),BM=m=>new T.MeshBasicMaterial(m),GRP=()=>new T.Group();
@@ -168,7 +166,7 @@
       playerBites++;updateTacticalHUD();$('damage-overlay').style.backgroundColor="rgba(255,0,0,0.4)";setTimeout(()=>{$('damage-overlay').style.backgroundColor="rgba(255,0,0,0)"},150);
       if(playerBites>=maxBites)triggerGameOver();else txtDiv.innerHTML="YOU WERE BITTEN! FALL BACK!";
     }
-    function triggerGameOver(){isGameOver=true;if(document.exitPointerLock)document.exitPointerLock();promptDiv.style.display='flex';$('prompt-text').innerHTML=`GAME OVER<br>YOU SURVIVED UNROUND ${currentRound}<br><br>Refresh page to restart`}
+    function triggerGameOver(){isGameOver=true;if(document.exitPointerLock)document.exitPointerLock();promptDiv.style.display='flex';$('prompt-text').innerHTML=`GAME OVER<br>YOU SURVIVED UNTIL ROUND ${currentRound}<br><br>Refresh page to restart`}
     function startRound(r){currentRound=r;$('round-val').innerText=toRoman(currentRound);zombiesToSpawnRemaining=4+Math.floor(currentRound*2.5);spawnInterval=Math.max(600,2500-currentRound*120);roundActive=true;txtDiv.innerHTML=`ROUND ${toRoman(currentRound)} HAS COMMENCED!`}
     function checkRoundEnd(){if(!roundActive)return;if(zombiesToSpawnRemaining===0&&activeZombies.filter(z=>!z.deadAndShrinking).length===0){roundActive=false;txtDiv.innerHTML=`ROUND ${toRoman(currentRound)} CLEARED. THE MANSION QUIETS...`;setTimeout(()=>{if(!isGameOver)startRound(currentRound+1)},4000)}}
     function attachTacticalDisplay(g,s=1){let h=MESH(BG(0.09*s,0.11*s,0.015*s),SM({color:0x2b1d14,metalness:0.5,roughness:0.4}),-0.048,0.07,-0.02,0,-Math.PI/2),f=MESH(PG(0.082*s,0.102*s),BM({map:gunTacticalTexture,toneMapped:false}),0,0,0.009*s);h.add(f);g.add(h)}
@@ -273,13 +271,11 @@
       lookPad.addEventListener('touchcancel', resetLookPad);
     }
 
-    // Tapping anywhere on screen fires on mobile (crosshair-less firing)
     window.addEventListener('touchstart', e => {
       if (isGameOver || !isMobile || e.target.tagName.includes('BUTTON') || e.target.closest('#mobile-controls') || e.target.closest('#click-prompt')) return;
       executeWeaponFireRaycast();
     });
 
-    // --- Click Prompt Handler maintaining Desktop pointer lock & Mobile init ---
     promptDiv.onclick = () => {
       initAudio();
       if(audioCtx && audioCtx.state === 'suspended') audioCtx.resume();
@@ -316,27 +312,23 @@
     const muzzleFlash=new T.PointLight(0xffaa00,0,10);pistolGroup.add(muzzleFlash);
     let playerYaw=0,playerPitch=0;const raycaster=new T.Raycaster();
     scene.add(new T.AmbientLight(0xffeedd,1.4));const sunLight=new T.DirectionalLight(0xfff5ee,1);sunLight.position.set(30,60,30);scene.add(sunLight);
-    
-    // Core raycast action function (handles shooting, filling holes via shooting, etc.)
+
     function executeWeaponFireRaycast() {
       if(isGameOver)return;
       playPistolShotSound();
       muzzleFlash.intensity=3;setTimeout(()=>muzzleFlash.intensity=0,50);
       
-      // Raycasting forward from camera to hit objects, enemies, or holes
       raycaster.setFromCamera(new T.Vector2(0, 0), camera);
       let intersects = raycaster.intersectObjects(scene.children, true);
       
       if(intersects.length > 0) {
         let hit = intersects[0];
-        // Filling holes via shooting if in range (< 15 units)
         if(hit.object.userData && hit.object.userData.materialType === "pit_void" && hit.point.distanceTo(playerRig.position) < 15) {
           fillHoleWithDirt(hit.object.userData.holeIndex);
         }
       }
     }
 
-    // Dummy placeholders for functions defined in your full codebase to prevent reference bugs:
     function throwGrenade() {}
     function placeClaymore() {}
     function triggerExplosion() {}
@@ -348,6 +340,8 @@
     function fillHoloGroupWithRewardModel() {}
     function fillHoloGroupWithWeaponModel() {}
     function initAudio() {}
+    function playPistolShotSound() {}
+    function fillHoleWithDirt() {}
 
     const renderer = new T.WebGLRenderer({antialias:true});
     renderer.setSize(window.innerWidth, window.innerHeight);
