@@ -464,7 +464,7 @@
 
     function playRoundClearJingle() {
       if (!audioCtx) return;
-      const notes = [523.25, 659.25, 783.99, 1046.50]; // C5, E5, G5, C6
+      const notes = [523.25, 659.25, 783.99, 1046.50];
       notes.forEach((freq, idx) => {
         const o = audioCtx.createOscillator(), g = audioCtx.createGain();
         o.type = 'triangle';
@@ -719,7 +719,7 @@
 
     function playProceduralDigSound(pos) {
       if (!audioCtx) return;
-      if (playerRig.position.distanceTo(pos) > 25) return; // Proximity limit
+      if (playerRig.position.distanceTo(pos) > 25) return;
 
       const o = audioCtx.createOscillator(), g = audioCtx.createGain();
       o.type = 'sawtooth';
@@ -1412,10 +1412,14 @@
             if (parts.group.position.distanceTo(rp) < parts.group.position.distanceTo(playerRig.position) + 5) tgt = rp.clone();
           }
           let zp = parts.group.position;
+          
+          // --- TARGET ROUTING (First hallway untouched, pool-to-basketball threshold fixed) ---
           if (zp.z > -25 && tgt.z < -25) tgt.set(0, zp.y, -25);
           else if (zp.z < -25 && zp.z > -65 && tgt.z < -65) tgt.set(0, zp.y, -65);
           else if (zp.z < -65 && zp.z > -215 && tgt.z < -215) tgt.set(0, zp.y, -215);
-          else if (zp.z < -215 && zp.z > -255 && tgt.z < -255) tgt.set(0, zp.y, -255);
+          // Fixed pool-to-basketball hallway gateway checkpoint (Z: -255 door threshold)
+          else if (zp.z < -255 && tgt.z > -255) tgt.set(0, zp.y, -250);
+          else if (zp.z > -255 && zp.z < -215 && tgt.z < -255) tgt.set(0, zp.y, -255);
           else if (zp.z < -65 && tgt.z > -65 && zp.z > -215) tgt.set(0, zp.y, -65);
 
           _tmpVec.subVectors(tgt, zp);
@@ -1863,7 +1867,6 @@
       }
     }
 
-    /* Desktop Controls */
     window.addEventListener('mousemove', e => {
       if (isMobile || document.pointerLockElement !== document.body || isGameOver) return;
       playerYaw -= e.movementX * 0.0025;
@@ -2104,11 +2107,16 @@
     drawAnimatedHostScreen(0);
 
     const moveVector = new V3();
+    let lastFrameTime = performance.now();
 
     function animate(t) {
       requestAnimationFrame(animate);
 
       let now = performance.now();
+      let delta = (now - lastFrameTime) * 0.001;
+      lastFrameTime = now;
+      if (delta > 0.1) delta = 0.016;
+
       if (isGameOver) return;
 
       drawAnimatedHostScreen(t);
@@ -2124,7 +2132,7 @@
       }
 
       if (robotMercState.active) {
-        robotMercState.durationTimer -= 0.016;
+        robotMercState.durationTimer -= delta;
         if (robotMercState.durationTimer <= 0) {
           robotMercState.active = false;
           robotMercState.level++;
@@ -2133,8 +2141,8 @@
           drawAnimatedHostScreen(t);
         }
       } else if (robotMercState.isBeingOverrun) {
-        robotMercState.overrunProgress += 0.01;
-        machineGroup.position.y -= 0.02;
+        robotMercState.overrunProgress += delta * 0.6;
+        machineGroup.position.y -= delta * 1.2;
         if (robotMercState.overrunProgress >= 1) {
           scene.remove(machineGroup);
           robotMercState.isBeingOverrun = false;
@@ -2143,9 +2151,9 @@
 
       for (let i = activeGrenades.length - 1; i >= 0; i--) {
         let n = activeGrenades[i];
-        n.fuse -= 0.016;
-        n.velocity.y -= 0.015;
-        n.mesh.position.add(n.velocity);
+        n.fuse -= delta;
+        n.velocity.y -= delta * 0.9;
+        n.mesh.position.addScaledVector(n.velocity, delta * 60);
         let fb = (playerRig.position.y < -45) ? -79.8 : 0;
         if (n.mesh.position.y <= fb + 0.2) {
           n.mesh.position.y = fb + 0.2;
@@ -2170,11 +2178,11 @@
         });
       });
 
-      upgReactorRing.rotation.x += 0.05;
+      upgReactorRing.rotation.x += delta * 3.0;
 
       if (upgradeMachineActive) {
-        upgradeMachineTimer += 0.016;
-        upgHoloWeapon.rotation.y += 0.12;
+        upgradeMachineTimer += delta;
+        upgHoloWeapon.rotation.y += delta * 7.2;
         upgHoloWeapon.position.y = 4.2 + (upgradeMachineTimer / 3) * 0.8;
         if (upgradeMachineTimer >= 3) {
           upgradeMachineActive = false;
@@ -2184,8 +2192,8 @@
           updateUpgradeMachineScreen();
         }
       } else if (upgradeMachineReadyToCollect) {
-        upgradeMachineTimer += 0.016;
-        upgHoloWeapon.rotation.y += 0.02;
+        upgradeMachineTimer += delta;
+        upgHoloWeapon.rotation.y += delta * 1.2;
         upgHoloWeapon.position.y = 4.8 + Math.sin(upgradeMachineTimer * 4) * 0.15;
         if (playerRig.position.distanceTo(upgradeMachineGroup.position) < 8 || upgradeMachineTimer > 1) {
           upgradeMachineReadyToCollect = false;
@@ -2208,8 +2216,8 @@
       }
 
       if (mysteryBoxActive) {
-        mysteryBoxTimer += 0.016;
-        boxWeaponHolo.rotation.y += 0.08;
+        mysteryBoxTimer += delta;
+        boxWeaponHolo.rotation.y += delta * 4.8;
         let rpn = ["PISTOL", "AUTO PISTOL", "HEAVY SHOTGUN", "AUTOMATIC RIFLE", "RAY PISTOL", "FRAG GRENADES", "CLAYMORE MINE", "ROBOT GOODY UPGRADE"], rpi = [1, 2, 3, 4, 5, 6, 7, 8];
         if (mysteryBoxTimer < 2.5) {
           if (Math.floor(mysteryBoxTimer * 15) % 2 === 0) {
@@ -2241,11 +2249,11 @@
           }
         }
       } else if (mysteryBoxReadyToCollect) {
-        mysteryBoxTimer += 0.016;
-        boxWeaponHolo.rotation.y += 0.03;
+        mysteryBoxTimer += delta;
+        boxWeaponHolo.rotation.y += delta * 1.8;
         boxWeaponHolo.position.y = 3.5 + Math.sin(mysteryBoxTimer * 3) * 0.15;
         if (mysteryBoxTimer >= 8) {
-          mysteryBoxFadeAlpha = Math.max(0, mysteryBoxFadeAlpha - 0.016);
+          mysteryBoxFadeAlpha = Math.max(0, mysteryBoxFadeAlpha - delta);
           if (mysteryBoxTimer >= 10) {
             mysteryBoxReadyToCollect = false;
             mysteryBoxTimer = 0;
@@ -2281,9 +2289,9 @@
             machineGroup.rotation.y = Math.atan2(ld.x, ld.z);
           } else if (rd.length() > 0.8) {
             rd.normalize();
-            machineGroup.position.addScaledVector(rd, 0.45);
+            machineGroup.position.addScaledVector(rd, delta * 27);
             machineGroup.rotation.y = Math.atan2(rd.x, ld.z);
-            mainWheelMesh.rotation.x += 0.3;
+            mainWheelMesh.rotation.x += delta * 18;
           } else {
             machineGroup.rotation.y = playerYaw;
           }
@@ -2292,15 +2300,15 @@
           if (diff.length() < 1.5) robotAIState.target = getNewUpperLevelTarget();
           else {
             diff.normalize();
-            machineGroup.position.addScaledVector(diff, robotAIState.speed);
+            machineGroup.position.addScaledVector(diff, delta * 7.2);
             machineGroup.rotation.y = Math.atan2(diff.x, diff.z);
-            mainWheelMesh.rotation.x += 0.1;
+            mainWheelMesh.rotation.x += delta * 6;
           }
         }
       }
 
       if (elevatorActive) {
-        elevatorProgress = (elevatorDirection === -1) ? Math.min(elevatorProgress + 0.005, 1) : Math.max(elevatorProgress - 0.005, 0);
+        elevatorProgress = (elevatorDirection === -1) ? Math.min(elevatorProgress + delta * 0.3, 1) : Math.max(elevatorProgress - delta * 0.3, 0);
         secretGalleryGroup.position.y = 0.2 - elevatorProgress * 80;
         if (playerRig.position.x >= -15 && playerRig.position.x <= 15 && playerRig.position.z >= -345 && playerRig.position.z <= -315) {
           playerRig.position.y = secretGalleryGroup.position.y + 3;
@@ -2318,9 +2326,9 @@
       moveVector.normalize().applyQuaternion(playerRig.quaternion);
       moveVector.y = 0;
 
-      let ws = hasStaminUp ? 0.5 : 0.35;
+      let movementSpeed = hasStaminUp ? 36 : 28;
       if (playerRig.position.z < -275 && playerRig.position.z > -385 && playerRig.position.x > -55 && playerRig.position.x < 55 && !secretPermanentlyOpen && playerRig.position.y <= 3.5 && playerRig.position.y > -40) {
-        ws = 0.12;
+        movementSpeed = 8;
       }
 
       mirrorMesh.visible = false;
@@ -2339,7 +2347,7 @@
         }
       }
 
-      let np = playerRig.position.clone().addScaledVector(moveVector, ws);
+      let np = playerRig.position.clone().addScaledVector(moveVector, movementSpeed * delta);
       checkWallCollisions(np);
       playerRig.position.copy(np);
 
@@ -2349,7 +2357,7 @@
       }
 
       if (!elevatorActive) {
-        secretProgress = secretActive ? Math.min(secretProgress + 0.01, 1) : Math.max(secretProgress - 0.01, 0);
+        secretProgress = secretActive ? Math.min(secretProgress + delta * 0.6, 1) : Math.max(secretProgress - delta * 0.6, 0);
         waterLeftMesh.position.x = -27.5 - secretProgress * 55;
         waterRightMesh.position.x = 27.5 + secretProgress * 55;
         secretGalleryGroup.position.y = secretPermanentlyOpen ? (-17 + secretProgress * 17.2) : -17;
