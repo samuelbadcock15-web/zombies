@@ -309,69 +309,60 @@
       tacticalCtx.fillStyle = '#21140e';
       tacticalCtx.fillRect(0, 0, 512, 512);
       tacticalCtx.strokeStyle = currentWeapon === 5 ? '#00ffff' : (lvl > 0 ? '#ffaa00' : '#b8860b');
-      tacticalCtx.lineWidth = 14;
+      tacticalCtx.lineWidth = 12;
       tacticalCtx.strokeRect(10, 10, 492, 492);
-
       tacticalCtx.fillStyle = '#ffd700';
-      tacticalCtx.font = 'bold 24px monospace';
-      tacticalCtx.textAlign = 'center';
-      tacticalCtx.fillText("AMMO", 256, 48);
-
-      tacticalCtx.fillStyle = '#ffffff';
-      tacticalCtx.font = '900 88px monospace';
-      tacticalCtx.textAlign = 'center';
-      tacticalCtx.fillText(cur < 10 ? `00${cur}` : (cur < 100 ? `0${cur}` : `${cur}`), 256, 128);
-
-      tacticalCtx.font = 'bold 26px monospace';
+      tacticalCtx.font = 'bold 22px monospace';
       tacticalCtx.textAlign = 'left';
-      tacticalCtx.fillStyle = lvl > 0 ? '#ffaa00' : '#ffd700';
-      tacticalCtx.fillText(lvl > 0 ? `LVL ${toRoman(lvl)}` : 'STD', 34, 120);
-
+      tacticalCtx.fillText("AMMO", 30, 42);
+      tacticalCtx.fillStyle = '#ffffff';
+      tacticalCtx.font = '900 76px monospace';
+      tacticalCtx.fillText(cur < 10 ? `00${cur}` : (cur < 100 ? `0${cur}` : `${cur}`), 30, 110);
+      tacticalCtx.font = 'bold 30px monospace';
       tacticalCtx.textAlign = 'right';
+      tacticalCtx.fillStyle = lvl > 0 ? '#ffaa00' : '#ffd700';
+      tacticalCtx.fillText(lvl > 0 ? `LVL ${toRoman(lvl)}` : 'STD', 482, 65);
       tacticalCtx.fillStyle = '#b8860b';
-      tacticalCtx.fillText(`/${max}`, 478, 120);
-
+      tacticalCtx.fillText(`/${max}`, 482, 105);
       tacticalCtx.fillStyle = '#3a2418';
-      tacticalCtx.fillRect(30, 146, 452, 24);
+      tacticalCtx.fillRect(30, 135, 452, 26);
       tacticalCtx.fillStyle = pct <= 0.15 ? '#ff2222' : (pct <= 0.35 ? '#ff8800' : '#ffaa00');
-      tacticalCtx.fillRect(34, 149, Math.max(0, 444 * pct), 18);
+      tacticalCtx.fillRect(34, 139, Math.max(0, 444 * pct), 18);
 
       if (hasQuickRevive) {
         tacticalCtx.fillStyle = '#00a8ff';
         tacticalCtx.font = 'bold 18px monospace';
         tacticalCtx.textAlign = 'left';
-        tacticalCtx.fillText("SHIELD (ABSORBS 2 BITES)", 30, 196);
+        tacticalCtx.fillText("SHIELD (ABSORBS 2 BITES)", 30, 185);
         tacticalCtx.fillStyle = '#3a2418';
-        tacticalCtx.fillRect(30, 204, 452, 16);
+        tacticalCtx.fillRect(30, 195, 452, 18);
         tacticalCtx.fillStyle = '#00a8ff';
-        tacticalCtx.fillRect(34, 206, Math.max(0, 444 * (quickReviveShield / 2)), 12);
+        tacticalCtx.fillRect(34, 198, Math.max(0, 444 * (quickReviveShield / 2)), 12);
       }
 
       tacticalCtx.strokeStyle = '#5a3d28';
       tacticalCtx.lineWidth = 4;
       tacticalCtx.beginPath();
-      tacticalCtx.moveTo(30, 235);
-      tacticalCtx.lineTo(482, 235);
+      tacticalCtx.moveTo(30, 230);
+      tacticalCtx.lineTo(482, 230);
       tacticalCtx.stroke();
-
       tacticalCtx.fillStyle = '#ffd700';
-      tacticalCtx.font = 'bold 20px monospace';
-      tacticalCtx.textAlign = 'left';
+      tacticalCtx.font = 'bold 22px monospace';
       tacticalCtx.fillText(`GRENADES (LVL ${toRoman(grenadeUpgradeLevel + 1)})`, 30, 265);
 
       for (let i = 0; i < 2; i++) {
-        let gx = 40 + i * 55, gy = 280, a = i < grenadeCount;
+        let gx = 40 + i * 55, gy = 285, a = i < grenadeCount;
         tacticalCtx.fillStyle = a ? '#ff5500' : '#443322';
         tacticalCtx.beginPath();
-        tacticalCtx.arc(gx + 15, gy + 18, 14, 0, Math.PI * 2);
+        tacticalCtx.arc(gx + 15, gy + 22, 14, 0, Math.PI * 2);
         tacticalCtx.fill();
-        tacticalCtx.fillRect(gx + 10, gy + 2, 10, 8);
+        tacticalCtx.fillRect(gx + 10, gy + 3, 10, 8);
       }
 
       tacticalCtx.fillStyle = '#ffd700';
       tacticalCtx.fillText(`CLAYMORES (LVL ${toRoman(claymoreUpgradeLevel + 1)})`, 260, 265);
       for (let i = 0; i < 2; i++) {
-        let cx = 270 + i * 75, cy = 285, a = i < claymoreCount;
+        let cx = 270 + i * 75, cy = 290, a = i < claymoreCount;
         tacticalCtx.fillStyle = a ? '#ffaa00' : '#554422';
         tacticalCtx.beginPath();
         tacticalCtx.moveTo(cx, cy + 18);
@@ -384,12 +375,12 @@
 
       tacticalCtx.strokeStyle = '#5a3d28';
       tacticalCtx.beginPath();
-      tacticalCtx.moveTo(30, 335);
-      tacticalCtx.lineTo(482, 335);
+      tacticalCtx.moveTo(30, 340);
+      tacticalCtx.lineTo(482, 340);
       tacticalCtx.stroke();
 
       [{name: "JUG", active: hasJuggerNog, color: "#ff2222"}, {name: "SHD", active: hasQuickRevive, color: "#00a8ff"}, {name: "DT2", active: hasDoubleTap, color: "#ffaa00"}, {name: "STA", active: hasStaminUp, color: "#ffff00"}].forEach((p, idx) => {
-        let bx = 30 + idx * 115, by = 368;
+        let bx = 30 + idx * 115, by = 378;
         tacticalCtx.fillStyle = p.active ? p.color : '#3a2418';
         tacticalCtx.fillRect(bx, by, 100, 28);
         tacticalCtx.strokeStyle = p.active ? '#ffffff' : '#6b4c35';
@@ -404,10 +395,10 @@
       tacticalCtx.fillStyle = playerBites >= maxBites ? '#ff0055' : '#ffd700';
       tacticalCtx.font = 'bold 18px monospace';
       tacticalCtx.textAlign = 'left';
-      tacticalCtx.fillText(`HEALTH (${maxBites - playerBites}/${maxBites} BITES)`, 30, 435);
+      tacticalCtx.fillText(`HEALTH (${maxBites - playerBites}/${maxBites} BITES)`, 30, 440);
       let activeHearts = Math.max(0, maxBites - playerBites);
       for (let i = 0; i < maxBites; i++) {
-        let hx = 30 + i * (420 / maxBites), hy = 445, isAlive = i < activeHearts;
+        let hx = 30 + i * (420 / maxBites), hy = 450, isAlive = i < activeHearts;
         tacticalCtx.fillStyle = isAlive ? '#ff0055' : '#44222a';
         tacticalCtx.beginPath();
         let x = hx + 15, y = hy + 12;
@@ -418,7 +409,6 @@
         tacticalCtx.bezierCurveTo(x + 15, y - 15, x, y - 6, x, y);
         tacticalCtx.fill();
       }
-
       gunTacticalTexture.needsUpdate = true;
     }
 
@@ -440,7 +430,7 @@
       playerBites++;
       updateTacticalHUD();
       $('damage-overlay').style.backgroundColor = "rgba(255,0,0,0.4)";
-      setTimeout(() => { $('damage-overlay').style.backgroundColor = "rgba(255,0,0,0)"; }, 150);
+      setTimeout(() => { $('damage-overlay').style.backgroundColor = "rgba(255,0,0,0)" }, 150);
       if (playerBites >= maxBites) triggerGameOver();
       else txtDiv.innerHTML = "YOU WERE BITTEN! FALL BACK!";
     }
@@ -462,11 +452,27 @@
       txtDiv.innerHTML = `ROUND ${toRoman(currentRound)} HAS COMMENCED!`;
     }
 
+    function playRoundJingle() {
+      if (!audioCtx) return;
+      const notes = [523.25, 659.25, 783.99, 1046.50];
+      notes.forEach((freq, idx) => {
+        const o = audioCtx.createOscillator(), g = audioCtx.createGain();
+        o.type = 'triangle';
+        o.frequency.setValueAtTime(freq, audioCtx.currentTime + idx * 0.12);
+        g.gain.setValueAtTime(0.2, audioCtx.currentTime + idx * 0.12);
+        g.gain.exponentialRampToValueAtTime(0.001, audioCtx.currentTime + idx * 0.12 + 0.3);
+        o.connect(g); g.connect(audioCtx.destination);
+        o.start(audioCtx.currentTime + idx * 0.12);
+        o.stop(audioCtx.currentTime + idx * 0.12 + 0.3);
+      });
+    }
+
     function checkRoundEnd() {
       if (!roundActive) return;
       const rem = activeZombies.filter(z => !z.deadAndShrinking).length;
       if (zombiesToSpawnRemaining === 0 && rem === 0) {
         roundActive = false;
+        playRoundJingle();
         txtDiv.innerHTML = `ROUND ${toRoman(currentRound)} CLEARED. THE MANSION QUIETS...`;
         setTimeout(() => { if (!isGameOver) startRound(currentRound + 1); }, 4000);
       }
@@ -1206,833 +1212,6 @@
           zombieBodyHitboxes.push(zb.meshParts.bodyProxy);
         }
       });
-    }
-
-    function spawnZombieAtBurrow() {
-      if (zombiesToSpawnRemaining <= 0 || isGameOver) return;
-      const isPlayerInCave = (playerRig.position.y <= -70);
-      let av = allBurrowHoles.filter(h => {
-        if (isPlayerInCave) { if (h.globalY > -40) return false; }
-        else { if (h.globalY < -40) return false; }
-        if (!unlockedDoors[0] && h.globalZ < -25) return false;
-        if (!unlockedDoors[1] && h.globalZ < -65) return false;
-        if (!unlockedDoors[2] && h.globalZ < -215) return false;
-        if (!unlockedDoors[3] && h.globalZ < -255) return false;
-        return true;
-      });
-      if (!av.length) return;
-      const th = av[Math.floor(Math.random() * av.length)];
-      if (th.dirtCount > 0) { clearHoleDirtLayer(allBurrowHoles.indexOf(th)); return; }
-      const zd = createZombieMesh();
-      zd.group.position.set(th.globalX, th.globalY, th.globalZ);
-      scene.add(zd.group);
-
-      activeZombies.push({
-        meshParts: zd,
-        speed: 0.05 + 0.11 * (currentRound / (currentRound + 35)) + Math.random() * 0.02,
-        stage: 3,
-        emergenceStage: 0,
-        stageProgress: 0,
-        baseY: th.globalY,
-        deadAndShrinking: false,
-        lastAttackTime: 0
-      });
-      zombiesToSpawnRemaining--;
-      rebuildZombieHitboxes();
-    }
-
-    function throwGrenade() {
-      if (isGameOver) return;
-      if (grenadeCount <= 0) { txtDiv.innerHTML = "OUT OF GRENADES! RESTOCK AT WALL STAND."; return; }
-      grenadeCount--;
-      updateTacticalHUD();
-      const dir = new V3(0, 0, -1).applyQuaternion(camera.getWorldQuaternion(new T.Quaternion())).normalize();
-      const sp = playerRig.position.clone().add(new V3(0, 2.5, 0));
-      const m = new T.Mesh(new T.SphereGeometry(0.2, 12, 12), new T.MeshStandardMaterial({color: 0x444433, roughness: 0.7}));
-      m.position.copy(sp);
-      scene.add(m);
-      const v = dir.multiplyScalar(0.7);
-      v.y += 0.25;
-      activeGrenades.push({mesh: m, velocity: v, fuse: 2});
-      txtDiv.innerHTML = "GRENADE DISPATCHED!";
-    }
-
-    function placeClaymore() {
-      if (isGameOver) return;
-      if (claymoreCount <= 0) { txtDiv.innerHTML = "OUT OF CLAYMORES! RESTOCK AT WALL STAND."; return; }
-      claymoreCount--;
-      updateTacticalHUD();
-      const sp = playerRig.position.clone();
-      sp.y = (playerRig.position.y < -45) ? -79.8 : 0;
-      const g = new T.Group();
-      g.position.copy(sp);
-      g.rotation.y = playerYaw;
-      const b = new T.Mesh(new T.BoxGeometry(0.6, 0.4, 0.15), new T.MeshStandardMaterial({color: 0x555544}));
-      b.position.y = 0.2;
-      g.add(b);
-      const l = new T.Mesh(new T.BoxGeometry(0.02, 0.02, 3), new T.MeshBasicMaterial({color: 0xff0000, transparent: true, opacity: 0.6}));
-      l.position.set(0, 0.2, -1.5);
-      g.add(l);
-      scene.add(g);
-      activeClaymores.push({group: g, laserMesh: l, position: sp.clone(), direction: new V3(0, 0, -1).applyQuaternion(g.quaternion).normalize()});
-      txtDiv.innerHTML = "CLAYMORE MINE SECURED!";
-    }
-
-    function setZombieStage(zb, s) {
-      zb.stage = Math.max(0, s);
-      if (zb.stage === 3) zb.meshParts.group.scale.setScalar(1);
-      else if (zb.stage === 2) zb.meshParts.group.scale.setScalar(0.73);
-      else if (zb.stage === 1) zb.meshParts.group.scale.setScalar(0.46);
-      else zb.deadAndShrinking = true;
-      zb.meshParts.group.updateMatrixWorld(true);
-    }
-
-    function triggerExplosion(pos, r, dmg) {
-      playExplosionSound();
-      const l = new T.PointLight(0xff5500, 8, r * 2);
-      l.position.copy(pos);
-      scene.add(l);
-      setTimeout(() => scene.remove(l), 150);
-      const rg = new T.Mesh(new T.RingGeometry(0.1, r, 16), new T.MeshBasicMaterial({color: 0xff3300, side: T.DoubleSide}));
-      rg.position.copy(pos).y += 0.1;
-      rg.rotation.x = Math.PI / 2;
-      scene.add(rg);
-      setTimeout(() => scene.remove(rg), 250);
-      let k = false;
-      activeZombies.forEach(z => {
-        if (!z.deadAndShrinking && z.emergenceStage >= 0) {
-          if (z.meshParts.group.position.distanceTo(pos) <= r) {
-            setZombieStage(z, z.stage - dmg);
-            if (z.deadAndShrinking) { addPoints(10); k = true; }
-          }
-        }
-      });
-      if (k) { rebuildZombieHitboxes(); checkRoundEnd(); }
-    }
-
-    function getConstrainedPosition(p) {
-      let x = p.x, z = p.z;
-      if (!unlockedDoors[0] && z < -23) z = -23;
-      if (!unlockedDoors[1] && z < -63) z = -63;
-      if (!unlockedDoors[2] && z < -213) z = -213;
-      if (!unlockedDoors[3] && z < -254) z = -254;
-
-      if (p.y < -40) {
-        p.x = Math.max(-115, Math.min(115, x));
-        p.z = Math.max(-445, Math.min(-215, z));
-        return p;
-      }
-      if (z <= 25 && z >= -25) {
-        x = Math.max(-23.5, Math.min(23.5, x));
-        if (z < -23.5 && (x < -4.5 || x > 4.5)) z = -23.5;
-        z = Math.max(-25, Math.min(23.5, z));
-      } else if (z < -25 && z > -65) {
-        x = Math.max(-4.5, Math.min(4.5, x));
-      } else if (z <= -65 && z >= -215) {
-        x = Math.max(-73.5, Math.min(73.5, x));
-        if (z > -66.5 && (x < -4.5 || x > 4.5)) z = -66.5;
-        if (z < -213.5 && (x < -4.5 || x > 4.5)) z = -213.5;
-        z = Math.max(-215, Math.min(-65, z));
-      } else if (z < -215 && z > -255) {
-        x = Math.max(-4.5, Math.min(4.5, x));
-      } else if (z <= -255 && z >= -405) {
-        x = Math.max(-73.5, Math.min(73.5, x));
-        if (z > -256.5 && (x < -4.5 || x > 4.5)) z = -256.5;
-        if (z < -403.5) z = -403.5;
-        z = Math.max(-405, Math.min(-255, z));
-      }
-      p.x = x; p.z = z;
-      return p;
-    }
-
-    const _tmpVec = new V3();
-    function updateZombies(now) {
-      if (isGameOver) return;
-      let chg = false;
-      for (let i = activeZombies.length - 1; i >= 0; i--) {
-        const zb = activeZombies[i], parts = zb.meshParts;
-        if (zb.deadAndShrinking) {
-          scene.remove(parts.group);
-          activeZombies.splice(i, 1);
-          chg = true;
-          continue;
-        }
-        if (zb.emergenceStage < 3) {
-          zb.stageProgress += 0.035;
-          if (zb.emergenceStage === 0) {
-            parts.head.visible = true;
-            parts.head.position.y = zb.stageProgress * 2.4;
-            if (zb.stageProgress >= 1) { zb.emergenceStage = 1; zb.stageProgress = 0; chg = true; }
-          } else if (zb.emergenceStage === 1) {
-            parts.body.visible = true;
-            parts.body.position.y = zb.stageProgress * 1.1;
-            if (zb.stageProgress >= 1) { zb.emergenceStage = 2; zb.stageProgress = 0; chg = true; }
-          } else if (zb.emergenceStage === 2) {
-            parts.arms.visible = true;
-            parts.arms.position.y = zb.stageProgress * 1.1;
-            if (zb.stageProgress >= 1) { zb.emergenceStage = 3; chg = true; }
-          }
-        } else {
-          let tgt = playerRig.position.clone();
-          if (robotMercState.active) {
-            let rp = machineGroup.position;
-            if (parts.group.position.distanceTo(rp) < parts.group.position.distanceTo(playerRig.position) + 5) tgt = rp.clone();
-          }
-          let zp = parts.group.position;
-          if (zp.z > -25 && tgt.z < -25) tgt.set(0, zp.y, -25);
-          else if (zp.z < -25 && zp.z > -65 && tgt.z < -65) tgt.set(0, zp.y, -65);
-          else if (zp.z < -65 && zp.z > -215 && tgt.z < -215) tgt.set(0, zp.y, -215);
-          else if (zp.z < -215 && zp.z > -255 && tgt.z < -255) tgt.set(0, zp.y, -255);
-          else if (zp.z < -65 && tgt.z > -65 && zp.z > -215) tgt.set(0, zp.y, -65);
-
-          _tmpVec.subVectors(tgt, zp);
-          _tmpVec.y = 0;
-          _tmpVec.normalize();
-          let np = zp.clone().addScaledVector(_tmpVec, zb.speed);
-          parts.group.position.copy(getConstrainedPosition(np));
-          parts.group.lookAt(tgt.x, parts.group.position.y, tgt.z);
-        }
-
-        let fz = new V3(parts.group.position.x, playerRig.position.y, parts.group.position.z);
-        let dist3D = parts.group.position.distanceTo(playerRig.position);
-        let vertDiff = Math.abs(parts.group.position.y - playerRig.position.y);
-
-        if (dist3D < 2.5 && vertDiff < 2.2 && zb.emergenceStage === 3 && now - zb.lastAttackTime > 1500) {
-          playZombieBiteSound();
-          damagePlayer();
-          zb.lastAttackTime = now;
-        }
-
-        if (robotMercState.active && zb.emergenceStage === 3 && !zb.deadAndShrinking) {
-          let gr = 120 + robotMercState.level * 25, dr = parts.group.position.distanceTo(machineGroup.position);
-          if (dr < gr) {
-            if (Math.random() < 0.35) {
-              setZombieStage(zb, zb.stage - 1);
-              playPistolShotSound();
-              if (zb.deadAndShrinking) { addPoints(10); chg = true; }
-            }
-            if (dr < 2.5 && now - zb.lastAttackTime > 1000) {
-              robotMercState.health -= 10;
-              zb.lastAttackTime = now;
-              txtDiv.innerHTML = `VETERAN ROBOT TAKING DAMAGE! HEALTH: ${robotMercState.health}/${robotMercState.maxHealth}`;
-              if (robotMercState.health <= 0) {
-                robotMercState.active = false;
-                robotMercState.isBeingOverrun = true;
-                speakRobotVoice("Argh! They got me! Get to the ship, marine!");
-                txtDiv.innerHTML = "ROBOT OVERRUN! ZOMBIES DRAGGING HIM INTO THE FLOOR!";
-              }
-            }
-          }
-        }
-      }
-      if (!isGameOver && machineGroup.parent && playerRig.position.distanceTo(machineGroup.position) < 10 && now - robotMercState.lastProximitySpeechTime > 15000) {
-        robotMercState.lastProximitySpeechTime = now;
-        speakRobotVoice(getUniqueRandomLine(robotMercState.active));
-      }
-      if (chg) { rebuildZombieHitboxes(); checkRoundEnd(); }
-    }
-
-    function createImpactDamageCrater(hit, type) {
-      if (type === "flesh") return;
-      const dc = new T.Group();
-      dc.position.copy(hit.point).addScaledVector(hit.face.normal, 0.03);
-      dc.lookAt(dc.position.clone().add(hit.face.normal));
-      const oc = new T.Mesh(new T.CylinderGeometry(0.18, 0.18, 0.01, 10), new T.MeshBasicMaterial({color: 0x111111, side: T.DoubleSide}));
-      oc.rotation.x = Math.PI / 2;
-      oc.userData = {isCrater: true};
-      dc.add(oc);
-      scene.add(dc);
-      setTimeout(() => scene.remove(dc), 1200);
-    }
-
-    function checkWallCollisions(pos) {
-      let c = getConstrainedPosition(pos);
-      pos.copy(c);
-    }
-
-    function fillHoloGroupWithRewardModel(g, rt) {
-      while (g.children.length > 0) g.remove(g.children[0]);
-      g.add(buildWeaponGeometry((rt >= 1 && rt <= 5) ? rt : 1, false));
-    }
-
-    function fillHoloGroupWithWeaponModel(g, wid, upg) {
-      while (g.children.length > 0) g.remove(g.children[0]);
-      g.add(buildWeaponGeometry(wid, upg));
-    }
-
-    function executeWeaponFireRaycast(screenX = null, screenY = null) {
-      if (isGameOver || !gunMeshGroup.visible) return;
-
-      if (screenX !== null && screenY !== null) {
-        const ndcX = (screenX / window.innerWidth) * 2 - 1;
-        const ndcY = -(screenY / window.innerHeight) * 2 + 1;
-        raycaster.setFromCamera(new T.Vector2(ndcX, ndcY), camera);
-      } else {
-        raycaster.setFromCamera(new T.Vector2(0, 0), camera);
-      }
-
-      if (isMobile) {
-        let hi = raycaster.intersectObjects(holeInteractiveMeshes);
-        if (hi.length > 0) {
-          if (hi[0].distance < 25) {
-            fillHoleWithDirt(hi[0].object.userData.holeIndex);
-            return;
-          } else {
-            txtDiv.innerHTML = "OUT OF RANGE!";
-            return;
-          }
-        }
-      }
-
-      let oh = raycaster.intersectObjects([redOrbMesh]);
-      if (oh.length > 0 && playerRig.position.y < -40 && oh[0].distance < 30) {
-        playerRig.position.set(0, 3, 15);
-        playerYaw = playerPitch = 0;
-        playerRig.rotation.set(0, 0, 0);
-        cameraPitchObject.rotation.set(0, 0, 0);
-        scene.background = defaultBG;
-        isLmbHeldDown = false;
-        elevatorActive = false;
-        elevatorProgress = 0;
-        elevatorDirection = 1;
-        secretGalleryGroup.position.y = 0.2;
-        let bz = activeZombies.filter(z => !z.deadAndShrinking).length;
-        zombiesToSpawnRemaining += bz;
-        activeZombies.forEach(z => scene.remove(z.meshParts.group));
-        activeZombies.length = 0;
-        rebuildZombieHitboxes();
-        allBurrowHoles.forEach(h => {
-          if (h.globalY < -40) {
-            h.dirtCount = h.maxDirt;
-            h.layers.forEach(l => l.visible = true);
-          }
-        });
-        txtDiv.innerHTML = `ORB SHOT! WARPED TO MANSION. ${bz} PHANTOMS MIGRATED BACK!`;
-        playMysteryBoxSound();
-        return;
-      }
-
-      let rh = raycaster.intersectObjects(machineGroup.children, true);
-      if (rh.length > 0 && playerRig.position.distanceTo(machineGroup.position) < 12) {
-        if (!robotMercState.active) {
-          if (playerPoints >= 500) {
-            playerPoints -= 500;
-            $('score-val').innerText = playerPoints;
-            robotMercState.active = true;
-            robotMercState.health = 100;
-            robotMercState.durationTimer = 45 + robotMercState.level * 15;
-            updateTacticalHUD();
-            drawAnimatedHostScreen(performance.now());
-            let l = getUniqueRandomLine(true);
-            speakRobotVoice(l);
-            txtDiv.innerHTML = `"${l}"`;
-          } else {
-            speakRobotVoice("You want my heavy guns? Bring me five hundred credits, marine!");
-            txtDiv.innerHTML = `"Hiring my service requires 500 credits, marine."`;
-          }
-        } else {
-          speakRobotVoice("Holding the line! Keep pushing marine!");
-          txtDiv.innerHTML = `"Holding the line! Keep pushing marine!"`;
-        }
-        return;
-      }
-
-      let ph = raycaster.intersectObjects(perkMachineObjects, true);
-      if (ph.length > 0 && ph[0].distance < 12) {
-        let t = ph[0].object.userData.materialType;
-        if (t === "jugger_nog") {
-          if (!hasJuggerNog) {
-            if (playerPoints >= 2500) {
-              playerPoints -= 2500;
-              $('score-val').innerText = playerPoints;
-              hasJuggerNog = true;
-              maxBites = 4;
-              updateTacticalHUD();
-              updatePerkScreens();
-              txtDiv.innerHTML = "JUGGER-NOG ACQUIRED! MAX HEALTH INCREASED.";
-              playMysteryBoxSound();
-            } else txtDiv.innerHTML = "JUGGER-NOG COSTS 2500 CREDITS.";
-          } else txtDiv.innerHTML = "ALREADY PURCHASED JUGGER-NOG!";
-          return;
-        }
-        if (t === "quick_revive") {
-          if (!hasQuickRevive) {
-            if (playerPoints >= 1500) {
-              playerPoints -= 1500;
-              $('score-val').innerText = playerPoints;
-              hasQuickRevive = true;
-              quickReviveShield = 2;
-              updateTacticalHUD();
-              updatePerkScreens();
-              txtDiv.innerHTML = "SHIELD ACQUIRED (ABSORBS 2 BITES)!";
-              playMysteryBoxSound();
-            } else txtDiv.innerHTML = "SHIELD COSTS 1500 CREDITS.";
-          } else txtDiv.innerHTML = "SHIELD ALREADY ACTIVE!";
-          return;
-        }
-        if (t === "double_tap") {
-          if (!hasDoubleTap) {
-            if (playerPoints >= 2000) {
-              playerPoints -= 2000;
-              $('score-val').innerText = playerPoints;
-              hasDoubleTap = true;
-              updateTacticalHUD();
-              updatePerkScreens();
-              txtDiv.innerHTML = "DOUBLE TAP II ACQUIRED! DAMAGE & FIRE RATE DOUBLED.";
-              playMysteryBoxSound();
-            } else txtDiv.innerHTML = "DOUBLE TAP II COSTS 2000 CREDITS.";
-          } else txtDiv.innerHTML = "ALREADY PURCHASED DOUBLE TAP II!";
-          return;
-        }
-        if (t === "stamin_up") {
-          if (!hasStaminUp) {
-            if (playerPoints >= 2000) {
-              playerPoints -= 2000;
-              $('score-val').innerText = playerPoints;
-              hasStaminUp = true;
-              updatePerkScreens();
-              txtDiv.innerHTML = "STAMIN-UP ACQUIRED! RUNNING SPEED INCREASED.";
-              playMysteryBoxSound();
-            } else txtDiv.innerHTML = "STAMIN-UP COSTS 2000 CREDITS.";
-          } else txtDiv.innerHTML = "ALREADY PURCHASED STAMIN-UP!";
-          return;
-        }
-      }
-
-      let dh = raycaster.intersectObjects(doorArray.filter((d, i) => !unlockedDoors[i]));
-      if (dh.length > 0 && dh[0].distance < 12) {
-        let td = dh[0].object, di = td.userData.doorIndex;
-        if (playerPoints >= 50) {
-          playerPoints -= 50;
-          $('score-val').innerText = playerPoints;
-          unlockedDoors[di] = true;
-          scene.remove(td);
-          txtDiv.innerHTML = `DOOR ${di + 1} OPENED! ADVANCE FORWARD.`;
-        } else txtDiv.innerHTML = "NEED 50 CREDITS TO UNLOCK THIS ROOM.";
-        return;
-      }
-
-      let mwPos = new V3();
-      upgradeMachineGroup.getWorldPosition(mwPos);
-      if (raycaster.intersectObjects(upgradeMachineGroup.children, true).length > 0 && playerRig.position.distanceTo(mwPos) < 15) {
-        if (!upgradeMachineActive && !upgradeMachineReadyToCollect) {
-          let cost = 500 + weaponUpgradeLevels[currentWeapon] * 250;
-          if (playerPoints >= cost) {
-            playerPoints -= cost;
-            $('score-val').innerText = playerPoints;
-            upgradeMachineActive = true;
-            upgradeMachineTimer = 0;
-            upgradeMachineWeaponSlot = currentWeapon;
-            fillHoloGroupWithWeaponModel(upgHoloWeapon, upgradeMachineWeaponSlot, true);
-            gunMeshGroup.visible = false;
-            updateUpgradeMachineScreen();
-            txtDiv.innerHTML = "RITUAL BLESSING STARTED. STAND BY.";
-          } else txtDiv.innerHTML = `RITUAL REQUIRES ${cost} CREDITS FOR THIS LEVEL.`;
-        }
-        return;
-      }
-
-      if (mysteryBoxReadyToCollect) {
-        let bwPos = new V3();
-        mysteryBoxGroup.getWorldPosition(bwPos);
-        if ((raycaster.intersectObjects(boxWeaponHolo.children, true).length > 0 || raycaster.intersectObjects(mysteryBoxGroup.children).length > 0) && playerRig.position.distanceTo(bwPos) < 15) {
-          mysteryBoxReadyToCollect = false;
-          while (boxWeaponHolo.children.length > 0) boxWeaponHolo.remove(boxWeaponHolo.children[0]);
-          if (mysteryBoxRewardType >= 1 && mysteryBoxRewardType <= 5) {
-            let w = mysteryBoxRewardType;
-            if (w === 2) hasAutomaticPistol = true;
-            if (w === 3) hasRifle = true;
-            if (w === 4) hasAutoRifle = true;
-            if (w === 5) hasRayPistol = true;
-            if (weaponUpgradeLevels[w] <= weaponUpgradeLevels[currentWeapon]) weaponUpgradeLevels[w] = weaponUpgradeLevels[currentWeapon] + 1;
-            ammoReserves[w] = getWeaponStat(w, 'maxAmmo');
-            switchWeapon(w);
-            txtDiv.innerHTML = `RELIC CHEST: ${baseWeaponData[w].name} [LVL ${toRoman(weaponUpgradeLevels[w])}] SECURED!`;
-          } else if (mysteryBoxRewardType === 6) {
-            grenadeCount = 2; grenadeUpgradeLevel++; updateTacticalHUD();
-            txtDiv.innerHTML = `RELIC CHEST: GRENADES LVL ${toRoman(grenadeUpgradeLevel + 1)} SECURED!`;
-          } else if (mysteryBoxRewardType === 7) {
-            claymoreCount = 2; claymoreUpgradeLevel++; updateTacticalHUD();
-            txtDiv.innerHTML = `RELIC CHEST: CLAYMORES LVL ${toRoman(claymoreUpgradeLevel + 1)} SECURED!`;
-          } else if (mysteryBoxRewardType === 8) {
-            robotMercState.level++; robotMercState.active = true; robotMercState.health = robotMercState.maxHealth; robotMercState.durationTimer += 30;
-            speakRobotVoice(`Smart core upgrade to level ${robotMercState.level}! Let's party!`);
-            txtDiv.innerHTML = `RELIC CHEST: VETERAN ROBOT UPGRADED TO LEVEL ${robotMercState.level}!`;
-          }
-          updateMysteryBoxScreen();
-          playMysteryBoxSound();
-          return;
-        }
-      }
-
-      let bwCheck = new V3();
-      mysteryBoxGroup.getWorldPosition(bwCheck);
-      if (raycaster.intersectObjects(mysteryBoxGroup.children).length > 0 && playerRig.position.distanceTo(bwCheck) < 15) {
-        if (!mysteryBoxActive && !mysteryBoxReadyToCollect) {
-          if (playerPoints >= 350) {
-            playerPoints -= 350;
-            $('score-val').innerText = playerPoints;
-            mysteryBoxActive = true;
-            mysteryBoxTimer = 0;
-            updateMysteryBoxScreen();
-            txtDiv.innerHTML = "SUMMONING RELIC FROM THE SHADOWS...";
-          } else txtDiv.innerHTML = "CURSED CHEST COSTS 350 CREDITS.";
-        }
-        return;
-      }
-
-      if (raycaster.intersectObjects([hiddenButtonMesh]).length > 0 && playerRig.position.distanceTo(hiddenButtonMesh.position) < 15) {
-        if (!secretPermanentlyOpen) {
-          if (playerPoints >= 350) {
-            playerPoints -= 350;
-            $('score-val').innerText = playerPoints;
-            secretPermanentlyOpen = true;
-            secretActive = true;
-            txtDiv.innerHTML = "CRYPT FLOORS RETRACTED! THE ALTAR PLATFORM HAS RISEN.";
-          } else txtDiv.innerHTML = "CRYPT LOCK REQUIRES 350 CREDITS.";
-        }
-        return;
-      }
-
-      if (secretPermanentlyOpen) {
-        let bwP = new V3();
-        pButton.getWorldPosition(bwP);
-        if (raycaster.intersectObjects([pButton]).length > 0 && playerRig.position.distanceTo(bwP) < 15) {
-          if (elevatorActive) return;
-          if (playerPoints >= 350) {
-            playerPoints -= 350;
-            $('score-val').innerText = playerPoints;
-            elevatorActive = true;
-            elevatorDirection = (elevatorProgress >= 0.5) ? 1 : -1;
-            robotAIState.status = 'goToElevator';
-            robotAIState.target.set(0, 0, -330);
-            txtDiv.innerHTML = "DESCENDING CRYPT LIFT! COST: 350 CREDITS.";
-          } else txtDiv.innerHTML = "LIFT TOLL: 350 CREDITS.";
-          return;
-        }
-      }
-
-      let wbh = raycaster.intersectObjects(wallBuyInteractiveObjects, true);
-      if (wbh.length > 0 && wbh[0].distance < 8) {
-        let ct = wbh[0].object.userData.materialType;
-        if (ct === "wall_buy") {
-          if (playerPoints >= 250) {
-            playerPoints -= 250; $('score-val').innerText = playerPoints;
-            hasAutomaticPistol = true; ammoReserves[2] = getWeaponStat(2, 'maxAmmo'); switchWeapon(2);
-            txtDiv.innerHTML = "AUTO PISTOL SECURED!";
-          } else txtDiv.innerHTML = "AUTO PISTOL COSTS 250 CREDITS.";
-          return;
-        }
-        if (ct === "rifle_buy") {
-          if (playerPoints >= 250) {
-            playerPoints -= 250; $('score-val').innerText = playerPoints;
-            hasRifle = true; ammoReserves[3] = getWeaponStat(3, 'maxAmmo'); switchWeapon(3);
-            txtDiv.innerHTML = "HEAVY SHOTGUN SECURED!";
-          } else txtDiv.innerHTML = "SHOTGUN COSTS 250 CREDITS.";
-          return;
-        }
-        if (ct === "auto_rifle_buy") {
-          if (playerPoints >= 500) {
-            playerPoints -= 500; $('score-val').innerText = playerPoints;
-            hasAutoRifle = true; ammoReserves[4] = getWeaponStat(4, 'maxAmmo'); switchWeapon(4);
-            txtDiv.innerHTML = "ASSAULT RIFLE SECURED!";
-          } else txtDiv.innerHTML = "ASSAULT RIFLE COSTS 500 CREDITS.";
-          return;
-        }
-        if (ct === "grenade_buy") {
-          if (playerPoints >= 100) {
-            playerPoints -= 100; $('score-val').innerText = playerPoints;
-            grenadeCount = 2; updateTacticalHUD();
-            txtDiv.innerHTML = "GRENADES RESTOCKED!";
-          } else txtDiv.innerHTML = "GRENADES REQUIRE 100 CREDITS.";
-          return;
-        }
-        if (ct === "claymore_buy") {
-          if (playerPoints >= 150) {
-            playerPoints -= 150; $('score-val').innerText = playerPoints;
-            claymoreCount = 2; updateTacticalHUD();
-            txtDiv.innerHTML = "CLAYMORES REPLENISHED!";
-          } else txtDiv.innerHTML = "CLAYMORES REQUIRE 150 CREDITS.";
-          return;
-        }
-      }
-
-      if (ammoReserves[currentWeapon] <= 0) {
-        txtDiv.innerHTML = "OUT OF AMMO! RESTOCK AT MANSION WALL BUYS.";
-        return;
-      }
-
-      ammoReserves[currentWeapon]--;
-      updateTacticalHUD();
-      playPistolShotSound();
-      muzzleFlash.intensity = 5;
-      pistolGroup.position.z += 0.1;
-      setTimeout(() => { muzzleFlash.intensity = 0; pistolGroup.position.z -= 0.1; }, 45);
-
-      let er = getWeaponStat(currentWeapon, 'range');
-      let headHits = raycaster.intersectObjects(zombieHeadHitboxes, false);
-      let isH = false, tz = null;
-
-      if (headHits.length > 0 && headHits[0].distance <= er) {
-        isH = true;
-        tz = activeZombies[headHits[0].object.userData.parentZombieIndex];
-      } else {
-        let bodyHits = raycaster.intersectObjects(zombieBodyHitboxes, false);
-        if (bodyHits.length > 0 && bodyHits[0].distance <= er) {
-          isH = false;
-          tz = activeZombies[bodyHits[0].object.userData.parentZombieIndex];
-        }
-      }
-
-      if (tz && !tz.deadAndShrinking) {
-        setZombieStage(tz, tz.stage - (isH ? getWeaponStat(currentWeapon, 'headDamage') : getWeaponStat(currentWeapon, 'damage')));
-        if (tz.deadAndShrinking) {
-          addPoints(isH ? 20 : 10);
-          txtDiv.innerHTML = isH ? "CRITICAL HEADSHOT KILL! +20 CREDITS" : "TARGET BANISHED! +10 CREDITS";
-          rebuildZombieHitboxes();
-          checkRoundEnd();
-        } else {
-          txtDiv.innerHTML = isH ? "HEADSHOT HIT! -3 STAGES! +20 CREDITS" : "HIT REGISTERED! STAGE REDUCED. +10 CREDITS";
-        }
-        return;
-      }
-
-      let eh = raycaster.intersectObjects(generalEnvironmentMeshes.filter(m => m.visible !== false));
-      if (eh.length > 0) {
-        if (eh[0].distance > er) { txtDiv.innerHTML = "OUT OF RANGE!"; return; }
-        createImpactDamageCrater(eh[0], "stone");
-      }
-    }
-
-    /* Desktop Controls */
-    window.addEventListener('mousemove', e => {
-      if (isMobile || document.pointerLockElement !== document.body || isGameOver) return;
-      playerYaw -= e.movementX * 0.0025;
-      playerRig.rotation.y = playerYaw;
-      playerPitch = Math.max(-1.4, Math.min(1.4, playerPitch - e.movementY * 0.0025));
-      cameraPitchObject.rotation.x = playerPitch;
-    });
-
-    window.addEventListener('mousedown', e => {
-      if (isMobile || document.pointerLockElement !== document.body || isGameOver) return;
-      if (e.button === 0) {
-        isLmbHeldDown = true;
-        executeWeaponFireRaycast();
-        lastShotTime = performance.now();
-      }
-      if (e.button === 2) {
-        raycaster.setFromCamera(new T.Vector2(0, 0), camera);
-        let hi = raycaster.intersectObjects(holeInteractiveMeshes);
-        if (hi.length > 0 && hi[0].distance < 25) fillHoleWithDirt(hi[0].object.userData.holeIndex);
-      }
-    });
-
-    window.addEventListener('mouseup', e => { if (e.button === 0) isLmbHeldDown = false; });
-
-    const keys = {w: 0, a: 0, s: 0, d: 0, shift: 0};
-    window.addEventListener('keydown', e => {
-      if (isGameOver) return;
-      if (e.code === 'KeyW') keys.w = 1;
-      if (e.code === 'KeyS') keys.s = 1;
-      if (e.code === 'KeyA') keys.a = 1;
-      if (e.code === 'KeyD') keys.d = 1;
-      if (e.code === 'ShiftLeft' || e.code === 'ShiftRight') keys.shift = 1;
-      if (e.code === 'Digit1') switchWeapon(1);
-      if (e.code === 'Digit2') switchWeapon(2);
-      if (e.code === 'Digit3') switchWeapon(3);
-      if (e.code === 'Digit4') switchWeapon(4);
-      if (e.code === 'Digit5') switchWeapon(5);
-      if (e.code === 'KeyG') throwGrenade();
-      if (e.code === 'KeyC') placeClaymore();
-    });
-
-    window.addEventListener('keyup', e => {
-      if (e.code === 'KeyW') keys.w = 0;
-      if (e.code === 'KeyS') keys.s = 0;
-      if (e.code === 'KeyA') keys.a = 0;
-      if (e.code === 'KeyD') keys.d = 0;
-      if (e.code === 'ShiftLeft' || e.code === 'ShiftRight') keys.shift = 0;
-    });
-
-    function setupMobileTouch() {
-      const bindDpad = (id, key) => {
-        const el = $(id);
-        if (!el) return;
-        el.addEventListener('touchstart', e => { e.preventDefault(); keys[key] = 1; }, {passive: false});
-        el.addEventListener('touchend', e => { e.preventDefault(); keys[key] = 0; }, {passive: false});
-        el.addEventListener('touchcancel', e => { e.preventDefault(); keys[key] = 0; }, {passive: false});
-      };
-      bindDpad('dpad-up', 'w');
-      bindDpad('dpad-down', 's');
-      bindDpad('dpad-left', 'a');
-      bindDpad('dpad-right', 'd');
-
-      const lookPad = $('look-pad');
-      let lookTouchId = null, lastTouchX = 0, lastTouchY = 0;
-
-      lookPad.addEventListener('touchstart', e => {
-        e.preventDefault();
-        const touch = e.changedTouches[0];
-        lookTouchId = touch.identifier;
-        lastTouchX = touch.clientX;
-        lastTouchY = touch.clientY;
-      }, {passive: false});
-
-      lookPad.addEventListener('touchmove', e => {
-        e.preventDefault();
-        for (let i = 0; i < e.changedTouches.length; i++) {
-          const t = e.changedTouches[i];
-          if (t.identifier === lookTouchId) {
-            const dx = t.clientX - lastTouchX;
-            const dy = t.clientY - lastTouchY;
-            lastTouchX = t.clientX;
-            lastTouchY = t.clientY;
-
-            // Increased sensitivity multiplier for responsive turning on mobile
-            playerYaw -= dx * 0.012;
-            playerRig.rotation.y = playerYaw;
-            playerPitch = Math.max(-1.4, Math.min(1.4, playerPitch - dy * 0.012));
-            cameraPitchObject.rotation.x = playerPitch;
-            break;
-          }
-        }
-      }, {passive: false});
-
-      const endLook = e => {
-        for (let i = 0; i < e.changedTouches.length; i++) {
-          if (e.changedTouches[i].identifier === lookTouchId) {
-            lookTouchId = null;
-            break;
-          }
-        }
-      };
-      lookPad.addEventListener('touchend', endLook, {passive: false});
-      lookPad.addEventListener('touchcancel', endLook, {passive: false});
-
-      $('btn-weap').addEventListener('touchstart', e => { e.preventDefault(); cycleToNextWeapon(); }, {passive: false});
-      $('btn-grenade').addEventListener('touchstart', e => { e.preventDefault(); throwGrenade(); }, {passive: false});
-      $('btn-claymore').addEventListener('touchstart', e => { e.preventDefault(); placeClaymore(); }, {passive: false});
-
-      let shootTouchId = null;
-      window.addEventListener('touchstart', e => {
-        if (!isMobile || isGameOver || promptDiv.style.display !== 'none') return;
-        for (let i = 0; i < e.changedTouches.length; i++) {
-          const touch = e.changedTouches[i];
-          if (touch.target.closest('.mobile-ui') || touch.target.closest('#score-board')) continue;
-          shootTouchId = touch.identifier;
-          touchShootCoords.x = touch.clientX;
-          touchShootCoords.y = touch.clientY;
-          isLmbHeldDown = true;
-          executeWeaponFireRaycast(touch.clientX, touch.clientY);
-          lastShotTime = performance.now();
-          break;
-        }
-      }, {passive: false});
-
-      window.addEventListener('touchmove', e => {
-        if (!isMobile || !isLmbHeldDown) return;
-        for (let i = 0; i < e.changedTouches.length; i++) {
-          if (e.changedTouches[i].identifier === shootTouchId) {
-            touchShootCoords.x = e.changedTouches[i].clientX;
-            touchShootCoords.y = e.changedTouches[i].clientY;
-            break;
-          }
-        }
-      }, {passive: true});
-
-      const endShoot = e => {
-        if (!isMobile) return;
-        for (let i = 0; i < e.changedTouches.length; i++) {
-          if (e.changedTouches[i].identifier === shootTouchId) {
-            isLmbHeldDown = false;
-            shootTouchId = null;
-            break;
-          }
-        }
-      };
-      window.addEventListener('touchend', endShoot, {passive: true});
-      window.addEventListener('touchcancel', endShoot, {passive: true});
-    }
-
-    if (isMobile) setupMobileTouch();
-
-    let lastSecTimer = -1;
-    function drawAnimatedHostScreen(t) {
-      let isSpeaking = window.speechSynthesis && window.speechSynthesis.speaking;
-      let sec = Math.ceil(robotMercState.durationTimer);
-      if (!isSpeaking && sec === lastSecTimer && !robotMercState.active) return;
-      lastSecTimer = sec;
-
-      sCtx.fillStyle = "#2b1810";
-      sCtx.fillRect(0, 0, 512, 512);
-      sCtx.strokeStyle = robotMercState.active ? "#ffd700" : "#b8860b";
-      sCtx.lineWidth = 12;
-      sCtx.strokeRect(0, 0, 512, 512);
-      sCtx.fillStyle = robotMercState.active ? "#ffd700" : "#b8860b";
-      sCtx.fillRect(140, 160, 50, 50);
-      sCtx.fillRect(322, 160, 50, 50);
-
-      let mo = isSpeaking ? Math.abs(Math.sin(t * 0.03)) * 40 : 15;
-      sCtx.fillRect(186, 300, 140, 10 + mo);
-      sCtx.fillStyle = "#ffffff";
-      sCtx.font = "bold 28px monospace";
-      sCtx.textAlign = "center";
-
-      if (robotMercState.active) {
-        sCtx.fillText(`LVL ${toRoman(robotMercState.level)} GOODY`, 256, 65);
-        sCtx.fillStyle = "#ffaa00";
-        sCtx.fillText(`${sec}s REMAINING`, 256, 430);
-      } else {
-        sCtx.fillText(`GOODY OS LVL ${toRoman(robotMercState.level)}`, 256, 65);
-        sCtx.fillStyle = "#ff5500";
-        sCtx.fillText("HIRE: 500 CR", 256, 430);
-      }
-      arcadeScreenTexture.needsUpdate = true;
-    }
-
-    function simulateStickmanMatch(t) {
-      gameState.actionTimer += 0.016;
-      const ra = Math.sin(t * 0.01);
-      stickman1.leftLeg.rotation.z = 0.15 + ra * 0.3;
-      stickman1.rightLeg.rotation.z = -0.15 - ra * 0.3;
-      stickman2.leftLeg.rotation.z = 0.15 - ra * 0.3;
-      stickman2.rightLeg.rotation.z = -0.15 + ra * 0.3;
-
-      if (gameState.ballHolder === 1) {
-        gameState.p1Pos.z += (-193 - gameState.p1Pos.z) * 0.02;
-        gameState.p1Pos.x += (0 - gameState.p1Pos.x) * 0.02;
-        gameState.ballPos.copy(gameState.p1Pos).add(new V3(0.8, 2.5 + Math.abs(Math.sin(t * 0.015)) * 1.5, 0.5));
-        if (gameState.actionTimer > 3) {
-          gameState.ballHolder = 0;
-          gameState.actionTimer = 0;
-          gameState.shotStart.copy(gameState.ballPos);
-          gameState.shotEnd.set(0, 12.5, -201.7);
-        }
-      } else if (gameState.ballHolder === 2) {
-        gameState.p2Pos.z += (-75 - gameState.p2Pos.z) * 0.02;
-        gameState.p2Pos.x += (0 - gameState.p2Pos.x) * 0.02;
-        gameState.ballPos.copy(gameState.p2Pos).add(new V3(-0.8, 2.5 + Math.abs(Math.cos(t * 0.015)) * 1.5, -0.5));
-        if (gameState.actionTimer > 2.5) {
-          gameState.ballHolder = 0;
-          gameState.actionTimer = 0;
-          gameState.shotStart.copy(gameState.ballPos);
-          gameState.shotEnd.set(0, 12.5, -78.3);
-        }
-      } else {
-        let p = Math.min(gameState.actionTimer * 1.2, 1);
-        gameState.ballPos.lerpVectors(gameState.shotStart, gameState.shotEnd, p);
-        gameState.ballPos.y += Math.sin(p * Math.PI) * 4.5;
-        if (p >= 1) {
-          gameState.actionTimer = 0;
-          gameState.ballHolder = (Math.random() > 0.5) ? 1 : 2;
-        }
-      }
-      if (gameState.ballHolder !== 2) gameState.p2Pos.lerp(new V3(gameState.ballPos.x * 0.5, 0, gameState.ballPos.z + 4), 0.03);
-      if (gameState.ballHolder !== 1) gameState.p1Pos.lerp(new V3(gameState.ballPos.x * 0.5, 0, gameState.ballPos.z - 4), 0.03);
-
-      stickman1.mesh.position.copy(gameState.p1Pos);
-      stickman2.mesh.position.copy(gameState.p2Pos);
-      ballMesh.position.copy(gameState.ballPos);
     }
 
     const renderer = new T.WebGLRenderer({antialias: true});
