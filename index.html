@@ -35,7 +35,6 @@
       display: none !important;
     }
 
-    /* Resized D-PAD Container with larger buttons */
     #dpad-container{bottom:60px;left:15px;width:144px;height:144px}
     .dpad-btn{position:absolute;width:48px;height:48px;background:rgba(35,24,18,0.85);border:2px solid #8b5a2b;color:#d4af37;font-size:20px;font-weight:bold;display:flex;align-items:center;justify-content:center;border-radius:8px;touch-action:none;box-sizing:border-box}
     .dpad-btn:active{background:rgba(212,175,55,0.4)}
@@ -55,9 +54,9 @@
     .center-action-btn:last-child{border-bottom:none}
     .center-action-btn:active{background:rgba(212,175,55,0.5)}
 
-    /* Resized Look Pad extended further left */
-    #look-pad{bottom:20px;right:15px;width:190px;height:95px;background:rgba(35,24,18,0.6);border:2px dashed #8b5a2b;border-radius:16px;display:flex;align-items:center;justify-content:center;color:#d4af37;font-weight:bold;font-size:11px;touch-action:none;letter-spacing:1px}
-    #btn-weap{bottom:125px;right:15px;width:44px;height:44px;background:rgba(35,24,18,0.85);border:2px solid #d4af37;color:#fff;border-radius:50%;font-weight:bold;font-size:16px;display:flex;align-items:center;justify-content:center;touch-action:none}
+    /* Enlarged Look Pad extended left and taller */
+    #look-pad{bottom:20px;right:15px;width:230px;height:115px;background:rgba(35,24,18,0.6);border:2px dashed #8b5a2b;border-radius:18px;display:flex;align-items:center;justify-content:center;color:#d4af37;font-weight:bold;font-size:12px;touch-action:none;letter-spacing:1px}
+    #btn-weap{bottom:145px;right:15px;width:44px;height:44px;background:rgba(35,24,18,0.85);border:2px solid #d4af37;color:#fff;border-radius:50%;font-weight:bold;font-size:16px;display:flex;align-items:center;justify-content:center;touch-action:none}
     #btn-weap:active{background:rgba(212,175,55,0.5)}
   </style>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
@@ -160,16 +159,55 @@
 
     function updatePerkScreens() {
       const cfg = [
-        {c: jugCtx, t: jugTex, bg: '#220000', st: '#ff2222', tx: 'JUGGER-NOG', sub: hasJuggerNog ? "ACQUIRED (+1 HEART)" : "COST: 2500 CREDITS"},
-        {c: qrCtx, t: qrTex, bg: '#001122', st: '#00a8ff', tx: 'QUICK REVIVE', sub: hasQuickRevive ? `SHIELD: ${quickReviveShield}/2` : "COST: 1500 CREDITS"},
-        {c: dtCtx, t: dtTex, bg: '#221100', st: '#ffaa00', tx: 'DOUBLE TAP II', sub: hasDoubleTap ? "ACQUIRED (2X FIRE/DMG)" : "COST: 2000 CREDITS"},
-        {c: suCtx, t: suTex, bg: '#002200', st: '#ffff00', tx: 'STAMIN-UP', sub: hasStaminUp ? "ACQUIRED (SPEED BOOST)" : "COST: 2000 CREDITS"}
+        {
+          c: jugCtx, t: jugTex, bg: '#220000', st: '#ff2222', tx: 'JUGGER-NOG',
+          desc: "MAX HEALTH +1",
+          sub: hasJuggerNog ? "[ACTIVE]" : "COST: 2500 CR"
+        },
+        {
+          c: qrCtx, t: qrTex, bg: '#001122', st: '#00a8ff', tx: 'SHIELD',
+          desc: "ABSORBS 2 BITES",
+          sub: hasQuickRevive ? `[SHIELD ${quickReviveShield}/2]` : "COST: 1500 CR"
+        },
+        {
+          c: dtCtx, t: dtTex, bg: '#221100', st: '#ffaa00', tx: 'DOUBLE TAP II',
+          desc: "2X DMG & SPEED",
+          sub: hasDoubleTap ? "[ACTIVE]" : "COST: 2000 CR"
+        },
+        {
+          c: suCtx, t: suTex, bg: '#002200', st: '#ffff00', tx: 'STAMIN-UP',
+          desc: "FAST SPRINT",
+          sub: hasStaminUp ? "[ACTIVE]" : "COST: 2000 CR"
+        }
       ];
+
       cfg.forEach(k => {
-        k.c.fillStyle = k.bg; k.c.fillRect(0, 0, 512, 512);
-        k.c.strokeStyle = k.st; k.c.lineWidth = 14; k.c.strokeRect(10, 10, 492, 492);
-        k.c.fillStyle = k.st; k.c.font = 'bold 36px monospace'; k.c.textAlign = 'center'; k.c.fillText(k.tx, 256, 80);
-        k.c.fillStyle = '#ffffff'; k.c.font = 'bold 24px monospace'; k.c.fillText(k.sub, 256, 200);
+        k.c.fillStyle = k.bg;
+        k.c.fillRect(0, 0, 512, 512);
+        
+        k.c.strokeStyle = k.st;
+        k.c.lineWidth = 16;
+        k.c.strokeRect(12, 12, 488, 488);
+        
+        k.c.fillStyle = k.st;
+        k.c.font = '900 38px monospace';
+        k.c.textAlign = 'center';
+        k.c.fillText(k.tx, 256, 75);
+        
+        k.c.fillStyle = '#140c08';
+        k.c.fillRect(36, 120, 440, 190);
+        k.c.strokeStyle = k.st;
+        k.c.lineWidth = 4;
+        k.c.strokeRect(36, 120, 440, 190);
+
+        k.c.fillStyle = '#ffffff';
+        k.c.font = '900 36px monospace';
+        k.c.fillText(k.desc, 256, 230);
+        
+        k.c.fillStyle = k.st;
+        k.c.font = 'bold 32px monospace';
+        k.c.fillText(k.sub, 256, 410);
+
         k.t.needsUpdate = true;
       });
     }
@@ -274,21 +312,21 @@
       tacticalCtx.fillStyle = '#21140e';
       tacticalCtx.fillRect(0, 0, 512, 512);
       tacticalCtx.strokeStyle = currentWeapon === 5 ? '#00ffff' : (lvl > 0 ? '#ffaa00' : '#b8860b');
-      tacticalCtx.lineWidth = 12;
+      tacticalCtx.lineWidth = 14;
       tacticalCtx.strokeRect(10, 10, 492, 492);
       tacticalCtx.fillStyle = '#ffd700';
-      tacticalCtx.font = 'bold 22px monospace';
+      tacticalCtx.font = 'bold 24px monospace';
       tacticalCtx.textAlign = 'left';
       tacticalCtx.fillText("AMMO", 30, 42);
       tacticalCtx.fillStyle = '#ffffff';
-      tacticalCtx.font = '900 76px monospace';
-      tacticalCtx.fillText(cur < 10 ? `00${cur}` : (cur < 100 ? `0${cur}` : `${cur}`), 30, 110);
-      tacticalCtx.font = 'bold 30px monospace';
+      tacticalCtx.font = '900 84px monospace';
+      tacticalCtx.fillText(cur < 10 ? `00${cur}` : (cur < 100 ? `0${cur}` : `${cur}`), 30, 114);
+      tacticalCtx.font = 'bold 32px monospace';
       tacticalCtx.textAlign = 'right';
       tacticalCtx.fillStyle = lvl > 0 ? '#ffaa00' : '#ffd700';
       tacticalCtx.fillText(lvl > 0 ? `LVL ${toRoman(lvl)}` : 'STD', 482, 65);
       tacticalCtx.fillStyle = '#b8860b';
-      tacticalCtx.fillText(`/${max}`, 482, 105);
+      tacticalCtx.fillText(`/${max}`, 482, 108);
       tacticalCtx.fillStyle = '#3a2418';
       tacticalCtx.fillRect(30, 135, 452, 26);
       tacticalCtx.fillStyle = pct <= 0.15 ? '#ff2222' : (pct <= 0.35 ? '#ff8800' : '#ffaa00');
@@ -298,7 +336,7 @@
         tacticalCtx.fillStyle = '#00a8ff';
         tacticalCtx.font = 'bold 18px monospace';
         tacticalCtx.textAlign = 'left';
-        tacticalCtx.fillText("QUICK REVIVE SHIELD", 30, 185);
+        tacticalCtx.fillText("SHIELD (ABSORBS 2 BITES)", 30, 185);
         tacticalCtx.fillStyle = '#3a2418';
         tacticalCtx.fillRect(30, 195, 452, 18);
         tacticalCtx.fillStyle = '#00a8ff';
@@ -344,7 +382,7 @@
       tacticalCtx.lineTo(482, 340);
       tacticalCtx.stroke();
 
-      [{name: "JUG", active: hasJuggerNog, color: "#ff2222"}, {name: "REV", active: hasQuickRevive, color: "#00a8ff"}, {name: "DT2", active: hasDoubleTap, color: "#ffaa00"}, {name: "STA", active: hasStaminUp, color: "#ffff00"}].forEach((p, idx) => {
+      [{name: "JUG", active: hasJuggerNog, color: "#ff2222"}, {name: "SHD", active: hasQuickRevive, color: "#00a8ff"}, {name: "DT2", active: hasDoubleTap, color: "#ffaa00"}, {name: "STA", active: hasStaminUp, color: "#ffff00"}].forEach((p, idx) => {
         let bx = 30 + idx * 115, by = 378;
         tacticalCtx.fillStyle = p.active ? p.color : '#3a2418';
         tacticalCtx.fillRect(bx, by, 100, 28);
@@ -384,11 +422,11 @@
         updateTacticalHUD();
         $('damage-overlay').style.backgroundColor = "rgba(0,168,255,0.4)";
         setTimeout(() => { $('damage-overlay').style.backgroundColor = "rgba(255,0,0,0)"; }, 150);
-        txtDiv.innerHTML = "QUICK REVIVE SHIELD ABSORBED BITE!";
+        txtDiv.innerHTML = "SHIELD ABSORBED BITE!";
         if (quickReviveShield <= 0) {
           hasQuickRevive = false;
           updateTacticalHUD();
-          txtDiv.innerHTML = "QUICK REVIVE SHIELD DEPLETED!";
+          txtDiv.innerHTML = "SHIELD DEPLETED!";
         }
         return;
       }
@@ -427,13 +465,14 @@
       }
     }
 
-    function attachTacticalDisplay(g, s = 1) {
-      const h = new T.Mesh(new T.BoxGeometry(0.09 * s, 0.11 * s, 0.015 * s), new T.MeshStandardMaterial({color: 0x2b1d14, metalness: 0.5, roughness: 0.4}));
-      const f = new T.Mesh(new T.PlaneGeometry(0.082 * s, 0.102 * s), new T.MeshBasicMaterial({map: gunTacticalTexture, toneMapped: false}));
-      f.position.z = 0.009 * s;
+    // Closer, larger tactical ammo screen attachment
+    function attachTacticalDisplay(g, s = 1.35) {
+      const h = new T.Mesh(new T.BoxGeometry(0.11 * s, 0.13 * s, 0.018 * s), new T.MeshStandardMaterial({color: 0x2b1d14, metalness: 0.5, roughness: 0.4}));
+      const f = new T.Mesh(new T.PlaneGeometry(0.102 * s, 0.122 * s), new T.MeshBasicMaterial({map: gunTacticalTexture, toneMapped: false}));
+      f.position.z = 0.01 * s;
       h.add(f);
-      h.position.set(-0.048, 0.07, -0.02);
-      h.rotation.set(0, -Math.PI / 2, 0);
+      h.position.set(-0.065, 0.08, 0.08);
+      h.rotation.set(0.08, -Math.PI / 2 + 0.25, 0.05);
       g.add(h);
     }
 
@@ -489,9 +528,9 @@
         let gp = new T.Mesh(new T.BoxGeometry(0.06, 0.18, 0.07), am);
         gp.position.set(0, -0.16, -0.06);
         g.add(gen, em, er, gp);
-        const sh = new T.Mesh(new T.BoxGeometry(0.09, 0.11, 0.015), new T.MeshStandardMaterial({color: 0x2b1d14, metalness: 0.5, roughness: 0.4}));
-        const sf = new T.Mesh(new T.PlaneGeometry(0.082, 0.102), new T.MeshBasicMaterial({map: gunTacticalTexture, toneMapped: false}));
-        sf.position.z = 0.009; sh.add(sf);
+        const sh = new T.Mesh(new T.BoxGeometry(0.11, 0.13, 0.018), new T.MeshStandardMaterial({color: 0x2b1d14, metalness: 0.5, roughness: 0.4}));
+        const sf = new T.Mesh(new T.PlaneGeometry(0.102, 0.122), new T.MeshBasicMaterial({map: gunTacticalTexture, toneMapped: false}));
+        sf.position.z = 0.01; sh.add(sf);
         sh.position.set(-0.16, 0.06, -0.02);
         sh.rotation.set(0.1, -Math.PI / 2 + 0.2, 0.1);
         g.add(sh);
@@ -510,7 +549,7 @@
       let upg = weaponUpgradeLevels[currentWeapon] > 0;
       while (gunMeshGroup.children.length > 0) gunMeshGroup.remove(gunMeshGroup.children[0]);
       gunMeshGroup.add(buildWeaponGeometry(currentWeapon, upg));
-      attachTacticalDisplay(gunMeshGroup, 1.3);
+      attachTacticalDisplay(gunMeshGroup, 1.35);
       updateTacticalHUD();
       updateUpgradeMachineScreen();
       txtDiv.innerHTML = `WEAPON SWITCHED TO: ${baseWeaponData[currentWeapon].name}${upg ? ` [LEVEL ${toRoman(weaponUpgradeLevels[currentWeapon])}]` : ""}`;
@@ -556,7 +595,6 @@
     const playerRig = new T.Group(); playerRig.position.set(0, 3, 15); scene.add(playerRig);
     const cameraPitchObject = new T.Group(); playerRig.add(cameraPitchObject); cameraPitchObject.add(camera);
     
-    // Gun viewport positioning configured for mobile vs desktop
     const pistolGroup = new T.Group(); 
     function updateWeaponViewportPosition() {
       const isPortrait = window.innerHeight > window.innerWidth;
@@ -1256,9 +1294,11 @@
       setTimeout(() => scene.remove(rg), 250);
       let k = false;
       activeZombies.forEach(z => {
-        if (!z.deadAndShrinking && z.meshParts.group.position.distanceTo(pos) <= r) {
-          setZombieStage(z, z.stage - dmg);
-          if (z.deadAndShrinking) { addPoints(10); k = true; }
+        if (!z.deadAndShrinking && z.emergenceStage >= 0) {
+          if (z.meshParts.group.position.distanceTo(pos) <= r) {
+            setZombieStage(z, z.stage - dmg);
+            if (z.deadAndShrinking) { addPoints(10); k = true; }
+          }
         }
       });
       if (k) { rebuildZombieHitboxes(); checkRoundEnd(); }
@@ -1515,10 +1555,10 @@
               quickReviveShield = 2;
               updateTacticalHUD();
               updatePerkScreens();
-              txtDiv.innerHTML = "QUICK REVIVE SHIELD ACTIVE!";
+              txtDiv.innerHTML = "SHIELD ACQUIRED (ABSORBS 2 BITES)!";
               playMysteryBoxSound();
-            } else txtDiv.innerHTML = "QUICK REVIVE COSTS 1500 CREDITS.";
-          } else txtDiv.innerHTML = "QUICK REVIVE SHIELD ALREADY ACTIVE!";
+            } else txtDiv.innerHTML = "SHIELD COSTS 1500 CREDITS.";
+          } else txtDiv.innerHTML = "SHIELD ALREADY ACTIVE!";
           return;
         }
         if (t === "double_tap") {
@@ -2052,10 +2092,12 @@
 
       activeClaymores.forEach((c, idx) => {
         activeZombies.forEach(z => {
-          if (!z.deadAndShrinking && z.meshParts.group.position.distanceTo(c.position) < 4) {
-            triggerExplosion(c.position, 7.5 + claymoreUpgradeLevel * 2, 3 + claymoreUpgradeLevel);
-            scene.remove(c.group);
-            activeClaymores.splice(idx, 1);
+          if (!z.deadAndShrinking && z.emergenceStage >= 0) {
+            if (z.meshParts.group.position.distanceTo(c.position) < 4) {
+              triggerExplosion(c.position, 7.5 + claymoreUpgradeLevel * 2, 3 + claymoreUpgradeLevel);
+              scene.remove(c.group);
+              activeClaymores.splice(idx, 1);
+            }
           }
         });
       });
