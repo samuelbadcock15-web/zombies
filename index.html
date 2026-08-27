@@ -8,11 +8,11 @@
     body{margin:0;background:#0c0806;color:#fff;font-family:monospace;overflow:hidden;width:100vw;height:100vh;touch-action:none;-webkit-user-select:none;user-select:none}
     canvas{display:block;width:100%;height:100%}
     #gui{position:absolute;top:0;left:0;width:100%;height:100%;pointer-events:none;z-index:10}
-    #stats{position:absolute;top:20px;left:20px;font-size:14px;font-weight:700;background:rgba(30,20,15,.9);color:#d4af37;padding:8px 12px;border:1px solid #6b4c35;line-height:1.4}
-    #score-board{position:absolute;top:20px;right:20px;font-size:20px;font-weight:700;background:#140d0a;color:#fa0;padding:10px 20px;border:2px solid #8b5a2b;pointer-events:auto}
-    #round-display{position:absolute;bottom:20px;left:20px;font-size:40px;font-weight:700;color:#c22;text-shadow:2px 2px #000}
-    #msg-box{position:absolute;bottom:20px;width:100%;text-align:center;left:0;pointer-events:none}
-    #text{display:inline-block;background:rgba(35,24,18,.95);color:#f0e0d0;border:2px solid #8b5a2b;padding:12px;min-width:280px;max-width:85vw;font-weight:700;text-transform:uppercase;box-shadow:0 4px 10px rgba(0,0,0,.5);font-size:13px}
+    #stats{position:absolute;top:10px;left:10px;font-size:12px;font-weight:700;background:rgba(30,20,15,.9);color:#d4af37;padding:6px 10px;border:1px solid #6b4c35;line-height:1.3;max-width:55vw;box-sizing:border-box}
+    #score-board{position:absolute;top:10px;right:10px;font-size:16px;font-weight:700;background:#140d0a;color:#fa0;padding:8px 12px;border:2px solid #8b5a2b;pointer-events:auto}
+    #round-display{position:absolute;bottom:15px;left:15px;font-size:32px;font-weight:700;color:#c22;text-shadow:2px 2px #000;z-index:11}
+    #msg-box{position:absolute;bottom:155px;width:100%;text-align:center;left:0;pointer-events:none;z-index:11}
+    #text{display:inline-block;background:rgba(35,24,18,.95);color:#f0e0d0;border:2px solid #8b5a2b;padding:8px 12px;min-width:240px;max-width:85vw;font-weight:700;text-transform:uppercase;box-shadow:0 4px 10px rgba(0,0,0,.5);font-size:12px}
     #crosshair{position:absolute;top:50%;left:50%;width:10px;height:10px;transform:translate(-50%,-50%);pointer-events:none}
     #crosshair::after,#crosshair::before{content:'';position:absolute;background:#fa0}
     #crosshair::before{top:4px;left:-10px;width:30px;height:2px}
@@ -28,7 +28,6 @@
       z-index: 20;
     }
 
-    /* Mobile media query strictly targeting touch screens */
     body.is-touch-device .mobile-ui {
       display: flex !important;
     }
@@ -36,19 +35,30 @@
       display: none !important;
     }
 
-    #dpad-container{bottom:80px;left:20px;width:130px;height:130px}
-    .dpad-btn{position:absolute;width:42px;height:42px;background:rgba(35,24,18,0.85);border:2px solid #8b5a2b;color:#d4af37;font-size:20px;font-weight:bold;display:flex;align-items:center;justify-content:center;border-radius:8px;touch-action:none}
+    /* D-PAD Container with Central 50/50 Split for Grenade/Claymore */
+    #dpad-container{bottom:60px;left:15px;width:126px;height:126px}
+    .dpad-btn{position:absolute;width:42px;height:42px;background:rgba(35,24,18,0.85);border:2px solid #8b5a2b;color:#d4af37;font-size:18px;font-weight:bold;display:flex;align-items:center;justify-content:center;border-radius:6px;touch-action:none;box-sizing:border-box}
     .dpad-btn:active{background:rgba(212,175,55,0.4)}
-    #dpad-up{top:0;left:44px}
-    #dpad-down{bottom:0;left:44px}
-    #dpad-left{top:44px;left:0}
-    #dpad-right{top:44px;right:0}
-    #dpad-center{top:44px;left:44px;width:42px;height:42px;background:rgba(20,13,10,0.6);border:1px dashed #6b4c35;border-radius:8px}
+    #dpad-up{top:0;left:42px}
+    #dpad-down{bottom:0;left:42px}
+    #dpad-left{top:42px;left:0}
+    #dpad-right{top:42px;right:0}
+    
+    #dpad-center{
+      position:absolute;top:42px;left:42px;width:42px;height:42px;
+      display:flex;flex-direction:column;border-radius:6px;overflow:hidden;border:1px solid #8b5a2b;box-sizing:border-box
+    }
+    .center-action-btn{
+      width:100%;height:50%;background:rgba(45,30,22,0.9);display:flex;align-items:center;justify-content:center;
+      font-size:13px;touch-action:none;border-bottom:1px solid #6b4c35;box-sizing:border-box
+    }
+    .center-action-btn:last-child{border-bottom:none}
+    .center-action-btn:active{background:rgba(212,175,55,0.5)}
 
-    #look-pad{bottom:25px;right:20px;width:130px;height:130px;background:rgba(35,24,18,0.6);border:2px dashed #8b5a2b;border-radius:50%;display:flex;align-items:center;justify-content:center;color:#d4af37;font-weight:bold;font-size:12px;touch-action:none}
-    #mobile-actions{bottom:165px;right:20px;display:flex;flex-direction:column;gap:10px}
-    .action-btn{width:46px;height:46px;background:rgba(35,24,18,0.85);border:2px solid #d4af37;color:#fff;border-radius:50%;font-weight:bold;font-size:14px;display:flex;align-items:center;justify-content:center;touch-action:none}
-    .action-btn:active{background:rgba(212,175,55,0.5)}
+    /* Look Pad Control & Weapon Switch Button */
+    #look-pad{bottom:20px;right:15px;width:120px;height:120px;background:rgba(35,24,18,0.6);border:2px dashed #8b5a2b;border-radius:50%;display:flex;align-items:center;justify-content:center;color:#d4af37;font-weight:bold;font-size:11px;touch-action:none}
+    #btn-weap{bottom:150px;right:52px;width:46px;height:46px;background:rgba(35,24,18,0.85);border:2px solid #d4af37;color:#fff;border-radius:50%;font-weight:bold;font-size:16px;display:flex;align-items:center;justify-content:center;touch-action:none}
+    #btn-weap:active{background:rgba(212,175,55,0.5)}
   </style>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
 </head>
@@ -56,7 +66,7 @@
   <div id="damage-overlay"></div>
   <div id="click-prompt"><span id="prompt-text">Click / Tap to Enter the Haunted Mansion</span></div>
   <div id="gui">
-    <div id="stats">WASD + LOOK | KEYS 1-5 SWITCH | G GRENADE | C CLAYMORE<br>SURVIVE THE HAUNTED OUTBREAK FROM ROUND 1!</div>
+    <div id="stats">WASD + LOOK | KEYS 1-5 SWITCH | G GRENADE | C CLAYMORE<br>SURVIVE THE HAUNTED OUTBREAK!</div>
     <div id="score-board">CREDITS: <span id="score-val">500</span></div>
     <div id="round-display">ROUND <span id="round-val">I</span></div>
     <div id="crosshair"></div>
@@ -65,16 +75,16 @@
     <div id="dpad-container" class="mobile-ui">
       <div id="dpad-up" class="dpad-btn">▲</div>
       <div id="dpad-left" class="dpad-btn">◀</div>
-      <div id="dpad-center"></div>
+      <div id="dpad-center">
+        <div id="btn-grenade" class="center-action-btn" title="Frag Grenade">💣</div>
+        <div id="btn-claymore" class="center-action-btn" title="Claymore Mine">💥</div>
+      </div>
       <div id="dpad-right" class="dpad-btn">▶</div>
       <div id="dpad-down" class="dpad-btn">▼</div>
     </div>
+    
+    <div id="btn-weap" class="mobile-ui" title="Switch Weapon">⇄</div>
     <div id="look-pad" class="mobile-ui">LOOK PAD</div>
-    <div id="mobile-actions" class="mobile-ui">
-      <div id="btn-weap" class="action-btn">⇄</div>
-      <div id="btn-grenade" class="action-btn">G</div>
-      <div id="btn-claymore" class="action-btn">C</div>
-    </div>
   </div>
 
   <canvas id="virtualArcadeCanvas" style="display:none" width="512" height="512"></canvas>
@@ -97,13 +107,12 @@
     const dtCtx = $('doubleTapCanvas').getContext('2d'), dtTex = new T.CanvasTexture($('doubleTapCanvas'));
     const suCtx = $('staminUpCanvas').getContext('2d'), suTex = new T.CanvasTexture($('staminUpCanvas'));
 
-    // Robust touch vs mouse detection
     const isMobile = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent) || 
                      (window.matchMedia && window.matchMedia("(hover: none) and (pointer: coarse)").matches);
 
     if (isMobile) {
       document.body.classList.add('is-touch-device');
-      $('stats').innerHTML = "TAP SCREEN TO SHOOT & REPAIR | USE D-PAD & LOOK PAD";
+      $('stats').innerHTML = "TAP SCREEN TO SHOOT / REPAIR | USE PADS TO MOVE";
     }
 
     let playerPoints = 500, currentWeapon = 1, playerBites = 0, maxBites = 3, isGameOver = false;
