@@ -598,6 +598,15 @@
       if (!roundActive && currentRound === 1) startRound(1);
     });
 
+    // Re-engage pointer lock when clicking back onto the game window after pressing Escape
+    window.addEventListener('click', () => {
+      if (!isMobile && !isGameOver && promptDiv.style.display === 'none') {
+        if (document.pointerLockElement !== document.body) {
+          document.body.requestPointerLock();
+        }
+      }
+    });
+
     window.addEventListener('blur', () => {
       keys.w = 0; keys.s = 0; keys.a = 0; keys.d = 0; keys.shift = 0;
       isLmbHeldDown = false;
