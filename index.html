@@ -552,7 +552,20 @@
 
     const playerRig = new T.Group(); playerRig.position.set(0, 3, 15); scene.add(playerRig);
     const cameraPitchObject = new T.Group(); playerRig.add(cameraPitchObject); cameraPitchObject.add(camera);
-    const pistolGroup = new T.Group(); pistolGroup.position.set(0.28, -0.28, -0.55); cameraPitchObject.add(pistolGroup);
+    
+    // Gun viewport positioning configured for mobile vs desktop
+    const pistolGroup = new T.Group(); 
+    function updateWeaponViewportPosition() {
+      const isPortrait = window.innerHeight > window.innerWidth;
+      if (isMobile || isPortrait) {
+        pistolGroup.position.set(0.16, -0.22, -0.48);
+      } else {
+        pistolGroup.position.set(0.28, -0.28, -0.55);
+      }
+    }
+    updateWeaponViewportPosition();
+    cameraPitchObject.add(pistolGroup);
+
     const gunMeshGroup = new T.Group(); pistolGroup.add(gunMeshGroup);
     const muzzleFlash = new T.PointLight(0xffaa00, 0, 10); pistolGroup.add(muzzleFlash);
 
@@ -2246,6 +2259,7 @@
       camera.aspect = window.innerWidth / window.innerHeight;
       camera.updateProjectionMatrix();
       renderer.setSize(window.innerWidth, window.innerHeight);
+      updateWeaponViewportPosition();
     });
 
     animate(0);
