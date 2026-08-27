@@ -11,8 +11,8 @@
     #stats{position:absolute;top:10px;left:10px;font-size:12px;font-weight:700;background:rgba(30,20,15,.9);color:#d4af37;padding:6px 10px;border:1px solid #6b4c35;line-height:1.3;max-width:55vw;box-sizing:border-box}
     #score-board{position:absolute;top:10px;right:10px;font-size:16px;font-weight:700;background:#140d0a;color:#fa0;padding:8px 12px;border:2px solid #8b5a2b;pointer-events:auto}
     #round-display{position:absolute;bottom:15px;left:15px;font-size:32px;font-weight:700;color:#c22;text-shadow:2px 2px #000;z-index:11}
-    #msg-box{position:absolute;bottom:155px;width:100%;text-align:center;left:0;pointer-events:none;z-index:11}
-    #text{display:inline-block;background:rgba(35,24,18,.95);color:#f0e0d0;border:2px solid #8b5a2b;padding:8px 12px;min-width:240px;max-width:85vw;font-weight:700;text-transform:uppercase;box-shadow:0 4px 10px rgba(0,0,0,.5);font-size:12px}
+    #msg-box{position:absolute;top:62px;width:100%;text-align:center;left:0;pointer-events:none;z-index:11}
+    #text{display:inline-block;background:rgba(35,24,18,.95);color:#f0e0d0;border:2px solid #8b5a2b;padding:6px 12px;min-width:240px;max-width:85vw;font-weight:700;text-transform:uppercase;box-shadow:0 4px 10px rgba(0,0,0,.5);font-size:11px}
     #crosshair{position:absolute;top:50%;left:50%;width:10px;height:10px;transform:translate(-50%,-50%);pointer-events:none}
     #crosshair::after,#crosshair::before{content:'';position:absolute;background:#fa0}
     #crosshair::before{top:4px;left:-10px;width:30px;height:2px}
@@ -20,7 +20,6 @@
     #click-prompt{position:absolute;top:0;left:0;width:100%;height:100%;background:rgba(15,10,8,.9);color:#d4af37;display:flex;flex-direction:column;align-items:center;justify-content:center;font-size:22px;font-weight:700;cursor:pointer;pointer-events:auto;text-transform:uppercase;z-index:100;text-align:center;padding:20px;box-sizing:border-box}
     #damage-overlay{position:absolute;top:0;left:0;width:100%;height:100%;background:rgba(255,0,0,0);pointer-events:none;transition:background .1s ease;z-index:5}
 
-    /* Mobile Virtual Controls - Explicitly hidden on desktop */
     .mobile-ui {
       display: none !important;
       position: absolute;
@@ -35,7 +34,6 @@
       display: none !important;
     }
 
-    /* D-PAD Container with Central 50/50 Split for Grenade/Claymore */
     #dpad-container{bottom:60px;left:15px;width:126px;height:126px}
     .dpad-btn{position:absolute;width:42px;height:42px;background:rgba(35,24,18,0.85);border:2px solid #8b5a2b;color:#d4af37;font-size:18px;font-weight:bold;display:flex;align-items:center;justify-content:center;border-radius:6px;touch-action:none;box-sizing:border-box}
     .dpad-btn:active{background:rgba(212,175,55,0.4)}
@@ -55,9 +53,8 @@
     .center-action-btn:last-child{border-bottom:none}
     .center-action-btn:active{background:rgba(212,175,55,0.5)}
 
-    /* Look Pad Control & Weapon Switch Button */
-    #look-pad{bottom:20px;right:15px;width:120px;height:120px;background:rgba(35,24,18,0.6);border:2px dashed #8b5a2b;border-radius:50%;display:flex;align-items:center;justify-content:center;color:#d4af37;font-weight:bold;font-size:11px;touch-action:none}
-    #btn-weap{bottom:150px;right:52px;width:46px;height:46px;background:rgba(35,24,18,0.85);border:2px solid #d4af37;color:#fff;border-radius:50%;font-weight:bold;font-size:16px;display:flex;align-items:center;justify-content:center;touch-action:none}
+    #look-pad{bottom:20px;right:15px;width:145px;height:90px;background:rgba(35,24,18,0.6);border:2px dashed #8b5a2b;border-radius:16px;display:flex;align-items:center;justify-content:center;color:#d4af37;font-weight:bold;font-size:11px;touch-action:none;letter-spacing:1px}
+    #btn-weap{bottom:120px;right:15px;width:44px;height:44px;background:rgba(35,24,18,0.85);border:2px solid #d4af37;color:#fff;border-radius:50%;font-weight:bold;font-size:16px;display:flex;align-items:center;justify-content:center;touch-action:none}
     #btn-weap:active{background:rgba(212,175,55,0.5)}
   </style>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
@@ -68,9 +65,9 @@
   <div id="gui">
     <div id="stats">WASD + LOOK | KEYS 1-5 SWITCH | G GRENADE | C CLAYMORE<br>SURVIVE THE HAUNTED OUTBREAK!</div>
     <div id="score-board">CREDITS: <span id="score-val">500</span></div>
+    <div id="msg-box"><div id="text">HAUNTED PROTOCOL ENGAGED. 500 CREDITS LOADED.</div></div>
     <div id="round-display">ROUND <span id="round-val">I</span></div>
     <div id="crosshair"></div>
-    <div id="msg-box"><div id="text">HAUNTED PROTOCOL ENGAGED. 500 CREDITS LOADED.</div></div>
 
     <div id="dpad-container" class="mobile-ui">
       <div id="dpad-up" class="dpad-btn">▲</div>
@@ -112,7 +109,7 @@
 
     if (isMobile) {
       document.body.classList.add('is-touch-device');
-      $('stats').innerHTML = "TAP SCREEN TO SHOOT / REPAIR | USE PADS TO MOVE";
+      $('stats').innerHTML = "HOLD SCREEN TO AUTO-FIRE | USE PADS TO MOVE";
     }
 
     let playerPoints = 500, currentWeapon = 1, playerBites = 0, maxBites = 3, isGameOver = false;
@@ -133,6 +130,8 @@
     let hasAutomaticPistol = false, hasRifle = false, hasAutoRifle = false, hasRayPistol = false;
     let isLmbHeldDown = false, lastShotTime = 0, autoFireRateMs = 120, grenadeCount = 2, grenadeUpgradeLevel = 0, claymoreCount = 2, claymoreUpgradeLevel = 0;
     const activeGrenades = [], activeClaymores = [];
+
+    let touchShootCoords = {x: 0, y: 0};
 
     let robotMercState = {active: false, health: 100, maxHealth: 100, durationTimer: 0, level: 1, isBeingOverrun: false, overrunProgress: 0, lastProximitySpeechTime: 0};
     const unhiredLines = [
@@ -1140,7 +1139,7 @@
       zombieHeadHitboxes.length = 0;
       zombieBodyHitboxes.length = 0;
       activeZombies.forEach((zb, idx) => {
-        if (!zb.deadAndShrinking && zb.emergenceStage === 3) {
+        if (!zb.deadAndShrinking && zb.emergenceStage >= 0) {
           zb.meshParts.headProxy.userData.parentZombieIndex = idx;
           zb.meshParts.bodyProxy.userData.parentZombieIndex = idx;
           zombieHeadHitboxes.push(zb.meshParts.headProxy);
@@ -1848,16 +1847,45 @@
       $('btn-grenade').addEventListener('touchstart', e => { e.preventDefault(); throwGrenade(); }, {passive: false});
       $('btn-claymore').addEventListener('touchstart', e => { e.preventDefault(); placeClaymore(); }, {passive: false});
 
+      let shootTouchId = null;
       window.addEventListener('touchstart', e => {
         if (!isMobile || isGameOver || promptDiv.style.display !== 'none') return;
         for (let i = 0; i < e.changedTouches.length; i++) {
           const touch = e.changedTouches[i];
-          const target = touch.target;
-          if (target.closest('.mobile-ui') || target.closest('#score-board')) continue;
+          if (touch.target.closest('.mobile-ui') || touch.target.closest('#score-board')) continue;
+          shootTouchId = touch.identifier;
+          touchShootCoords.x = touch.clientX;
+          touchShootCoords.y = touch.clientY;
+          isLmbHeldDown = true;
           executeWeaponFireRaycast(touch.clientX, touch.clientY);
           lastShotTime = performance.now();
+          break;
+        }
+      }, {passive: false});
+
+      window.addEventListener('touchmove', e => {
+        if (!isMobile || !isLmbHeldDown) return;
+        for (let i = 0; i < e.changedTouches.length; i++) {
+          if (e.changedTouches[i].identifier === shootTouchId) {
+            touchShootCoords.x = e.changedTouches[i].clientX;
+            touchShootCoords.y = e.changedTouches[i].clientY;
+            break;
+          }
         }
       }, {passive: true});
+
+      const endShoot = e => {
+        if (!isMobile) return;
+        for (let i = 0; i < e.changedTouches.length; i++) {
+          if (e.changedTouches[i].identifier === shootTouchId) {
+            isLmbHeldDown = false;
+            shootTouchId = null;
+            break;
+          }
+        }
+      };
+      window.addEventListener('touchend', endShoot, {passive: true});
+      window.addEventListener('touchcancel', endShoot, {passive: true});
     }
 
     if (isMobile) setupMobileTouch();
@@ -1963,9 +1991,10 @@
       redOrbMesh.position.y = 7 + Math.sin(t * 0.003) * 0.8;
 
       let efr = hasDoubleTap ? autoFireRateMs / 2 : autoFireRateMs;
-      if (isLmbHeldDown && (currentWeapon === 2 || currentWeapon === 4 || currentWeapon === 5)) {
+      if (isLmbHeldDown && (currentWeapon === 2 || currentWeapon === 3 || currentWeapon === 4 || currentWeapon === 5)) {
         if (now - lastShotTime > (currentWeapon === 5 ? efr * 0.8 : efr)) {
-          executeWeaponFireRaycast();
+          if (isMobile) executeWeaponFireRaycast(touchShootCoords.x, touchShootCoords.y);
+          else executeWeaponFireRaycast();
           lastShotTime = now;
         }
       }
@@ -2115,7 +2144,7 @@
           tp.y = (playerRig.position.y < -40) ? -79.8 : 0;
           let rd = new V3().subVectors(tp, machineGroup.position), nz = null, minD = 120 + robotMercState.level * 25;
           activeZombies.forEach(z => {
-            if (!z.deadAndShrinking && z.emergenceStage === 3) {
+            if (!z.deadAndShrinking && z.emergenceStage >= 0) {
               let d = machineGroup.position.distanceTo(z.meshParts.group.position);
               if (d < minD) { minD = d; nz = z; }
             }
