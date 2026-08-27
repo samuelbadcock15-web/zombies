@@ -1857,7 +1857,7 @@
       }
 
       if (tz && !tz.deadAndShrinking) {
-        setZombieStage(tz, tz.stage - (isH ? getWeaponStat(currentWeapon, 'headDamage') : getWeaponStat(currentWeapon, 'damage')));
+        setZombieStage(tz, tz.stage - (isH ? getWeaponStat(currentWeapon, 'headDamage' ) : getWeaponStat(currentWeapon, 'damage')));
         if (tz.deadAndShrinking) {
           addPoints(isH ? 20 : 10);
           txtDiv.innerHTML = isH ? "CRITICAL HEADSHOT KILL! +20 CREDITS" : "TARGET BANISHED! +10 CREDITS";
@@ -1989,6 +1989,7 @@
         for (let i = 0; i < e.changedTouches.length; i++) {
           const touch = e.changedTouches[i];
           if (touch.target.closest('.mobile-ui') || touch.target.closest('#score-board')) continue;
+          e.preventDefault(); // Prevents default touch callout and haptic vibration feedback
           shootTouchId = touch.identifier;
           touchShootCoords.x = touch.clientX;
           touchShootCoords.y = touch.clientY;
