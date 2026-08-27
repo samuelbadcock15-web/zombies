@@ -182,7 +182,6 @@
       cfg.forEach(k => {
         k.c.fillStyle = k.bg;
         k.c.fillRect(0, 0, 512, 512);
-        
         k.c.strokeStyle = k.st;
         k.c.lineWidth = 16;
         k.c.strokeRect(12, 12, 488, 488);
@@ -1211,19 +1210,19 @@
 
     function spawnZombieAtBurrow() {
       if (zombiesToSpawnRemaining <= 0 || isGameOver) return;
+      const isPlayerInCave = (playerRig.position.y <= -70);
       let av = allBurrowHoles.filter(h => {
-        if (!unlockedDoors[0]) return h.globalZ > -25;
-        if (!unlockedDoors[1]) return h.globalZ > -65;
-        if (!unlockedDoors[2]) return h.globalZ > -215;
-        if (!unlockedDoors[3]) return h.globalZ > -255;
+        if (isPlayerInCave) { if (h.globalY > -40) return false; }
+        else { if (h.globalY < -40) return false; }
+        if (!unlockedDoors[0] && h.globalZ < -25) return false;
+        if (!unlockedDoors[1] && h.globalZ < -65) return false;
+        if (!unlockedDoors[2] && h.globalZ < -215) return false;
+        if (!unlockedDoors[3] && h.globalZ < -255) return false;
         return true;
       });
       if (!av.length) return;
       const th = av[Math.floor(Math.random() * av.length)];
-      if (th.dirtCount > 0) {
-        clearHoleDirtLayer(allBurrowHoles.indexOf(th));
-        return;
-      }
+      if (th.dirtCount > 0) { clearHoleDirtLayer(allBurrowHoles.indexOf(th)); return; }
       const zd = createZombieMesh();
       zd.group.position.set(th.globalX, th.globalY, th.globalZ);
       scene.add(zd.group);
@@ -1395,7 +1394,10 @@
         }
 
         let fz = new V3(parts.group.position.x, playerRig.position.y, parts.group.position.z);
-        if (fz.distanceTo(playerRig.position) < 2.5 && zb.emergenceStage === 3 && now - zb.lastAttackTime > 1500) {
+        let dist3D = parts.group.position.distanceTo(playerRig.position);
+        let vertDiff = Math.abs(parts.group.position.y - playerRig.position.y);
+
+        if (dist3D < 2.5 && vertDiff < 2.2 && zb.emergenceStage === 3 && now - zb.lastAttackTime > 1500) {
           playZombieBiteSound();
           damagePlayer();
           zb.lastAttackTime = now;
@@ -1886,9 +1888,10 @@
             lastTouchX = t.clientX;
             lastTouchY = t.clientY;
 
-            playerYaw -= dx * 0.005;
+            // Increased sensitivity multiplier for responsive turning on mobile
+            playerYaw -= dx * 0.012;
             playerRig.rotation.y = playerYaw;
-            playerPitch = Math.max(-1.4, Math.min(1.4, playerPitch - dy * 0.005));
+            playerPitch = Math.max(-1.4, Math.min(1.4, playerPitch - dy * 0.012));
             cameraPitchObject.rotation.x = playerPitch;
             break;
           }
